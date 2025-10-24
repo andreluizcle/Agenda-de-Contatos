@@ -21,7 +21,7 @@ void Executar(void (*Comando)(FILE*), const char* modo)
 }
 
 //
-void Consultar(void (*Comando)(FILE*, Contato*), const char* modo, Contato* dados)
+void Consultar(void (*Comando)(FILE*, Contato**), const char* modo, Contato** dados)
 {
     // Verificar se o Arquivo Existe
     FILE* arquivo = fopen(NOME_ARQUIVO, modo);
