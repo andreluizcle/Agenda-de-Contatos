@@ -3,6 +3,7 @@
 
 //
 typedef struct {
+    int codigo;
     char nome[50];
     char telefone[50];
     char email[50];

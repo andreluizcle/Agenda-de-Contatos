@@ -7,6 +7,6 @@
 
 // Headers dos Métodos do Arquivo
 void ListarContatos(FILE* arquivo, Contato** dados);
-void ListarContatosArquivo();
+void ListarContatosArquivo(Contato** dados);
 
 #endif
