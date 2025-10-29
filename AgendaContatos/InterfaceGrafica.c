@@ -7,58 +7,14 @@
 // Lista global para os contatos
 GtkWidget *list_box;
 
-// Cria uma linha com o nome de um contato
-static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50], char email[50], char endereco[50]) {
-  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-  GtkWidget *labelNome = gtk_label_new(nome);
-  GtkWidget *labelTelefone = gtk_label_new(telefone);
-  GtkWidget *labelEmail = gtk_label_new(email);
-  GtkWidget *labelEndereco = gtk_label_new(endereco);
-  
-  gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
-  //Expand, Fill, Margin Expand->Crese se houver espaço, se estiver orientado vertical cresce vertical, Fill->Ocupa todo espaço que recebeu ou nao ocupa mas reserva
-  gtk_box_pack_start(GTK_BOX(box), labelNome, TRUE, TRUE, 0);
-
-  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
-  gtk_box_pack_start(GTK_BOX(box), labelTelefone, TRUE, TRUE, 0);
-
-  gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
-  gtk_box_pack_start(GTK_BOX(box), labelEmail, TRUE, TRUE, 0);
-
-  gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
-  gtk_box_pack_start(GTK_BOX(box), labelEndereco, TRUE, TRUE, 0);
-
-  return box;
-}
-
-// Atualiza os resultados da pesquisa
-static void atualizarPesquisa(const char *query) {
-    GList *children, *iter;
-
-    // Remove o conteúdo atual da lista
-    children = gtk_container_get_children(GTK_CONTAINER(list_box));
-    //Iter->next (Proximo No do Grafo)
-    for (iter = children; iter != NULL; iter = iter->next)
-        gtk_widget_destroy(GTK_WIDGET(iter->data));
-    g_list_free(children);
-
-    // Simulação de resultados -> Chamar metodo que faz a busca aqui
-    Contato* dados = (Contato*)malloc(sizeof(Contato));
-    ListarContatosArquivo(&dados);
-    // const char *Contatos[] = {"Contato 1", "Contato 2", "Contato 3", "Contato 4", NULL};
-    // const char *Telefones[] = {"(11) 1111-1111", "(22) 1111-1111","(33) 1111-1111","(44) 1111-1111", NULL};
-
-    for (int i = 0; dados[i].codigo != NULL; i++) {
-        if (strstr(dados[i].nome, query) != NULL || strlen(query) == 0) {
-            GtkWidget *linha = criarLinhaContato(dados[i].codigo, dados[i].nome, 
-                dados[i].telefone, dados[i].email, dados[i].endereco);
-            //-1 -> Final da lista (Parametro de posição)
-            gtk_list_box_insert(GTK_LIST_BOX(list_box), linha, -1);
-        }
-    }
-
-    gtk_widget_show_all(list_box);
-}
+static void pesquisaClicada(GtkButton *button, gpointer user_data);
+void SalvarResultados(GtkButton *button, gpointer user_data);
+static void CriarContatoPopUp(GtkButton *button, gpointer user_data);
+static void Alterar(GtkButton *button, gpointer user_data);
+static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50], char email[50], char endereco[50]);
+static void atualizarPesquisa(const char *query);
+static void iniciarJanela(GtkApplication *app);
+static void Excluir(GtkButton *button, gpointer user_data);
 
 // Callback do botão de pesquisa
 static void pesquisaClicada(GtkButton *button, gpointer user_data) {
@@ -137,11 +93,86 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     gtk_widget_show_all(CaixaDialogo);
 }
 
+static void Alterar(GtkButton *button, gpointer user_data){
+    //Chamar um metodo de Excluir aqui
+
+    CriarContatoPopUp(NULL, NULL);
+}
+
+static void Excluir(GtkButton *button, gpointer user_data){
+    //Chamar um metodo de Excluir aqui
+}
+
+// Cria uma linha com o nome de um contato
+static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50], char email[50], char endereco[50]){
+  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 20);
+  GtkWidget *labelNome = gtk_label_new(nome);
+  GtkWidget *labelTelefone = gtk_label_new(telefone);
+  GtkWidget *labelEmail = gtk_label_new(email);
+  GtkWidget *labelEndereco = gtk_label_new(endereco);
+  GtkWidget *botaoAlterar = gtk_button_new_with_label("Alterar");
+  GtkWidget *botaoExcluir = gtk_button_new_with_label("Excluir");
+
+  gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
+  //Expand, Fill, Margin Expand->Crese se houver espaço, se estiver orientado vertical cresce vertical, Fill->Ocupa todo espaço que recebeu ou nao ocupa mas reserva
+  gtk_box_pack_start(GTK_BOX(box), labelNome, TRUE, TRUE, 6);
+
+  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
+  gtk_box_pack_start(GTK_BOX(box), labelTelefone, TRUE, TRUE, 6);
+
+  gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
+  gtk_box_pack_start(GTK_BOX(box), labelEmail, TRUE, TRUE, 6);
+
+  gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
+  gtk_box_pack_start(GTK_BOX(box), labelEndereco, TRUE, TRUE, 6);
+
+  g_signal_connect(botaoAlterar, "clicked", G_CALLBACK(Alterar), NULL);
+  // dar tamanho mínimo ao botão para garantir visibilidade
+  gtk_widget_set_size_request(botaoAlterar, 80, -1);
+  gtk_box_pack_start(GTK_BOX(box), botaoAlterar, FALSE, FALSE, 6);
+
+  gtk_widget_set_halign(botaoExcluir, GTK_ALIGN_END);
+  g_signal_connect(botaoExcluir, "clicked", G_CALLBACK(Excluir), NULL);
+  // dar tamanho mínimo ao botão para garantir visibilidade
+  gtk_widget_set_size_request(botaoExcluir, 80, -1);
+  gtk_box_pack_start(GTK_BOX(box), botaoExcluir, FALSE, FALSE, 6);
+  
+  return box;
+}
+
+// Atualiza os resultados da pesquisa
+static void atualizarPesquisa(const char *query) {
+    GList *children, *iter;
+
+    // Remove o conteúdo atual da lista
+    children = gtk_container_get_children(GTK_CONTAINER(list_box));
+    //Iter->next (Proximo No do Grafo)
+    for (iter = children; iter != NULL; iter = iter->next)
+        gtk_widget_destroy(GTK_WIDGET(iter->data));
+    g_list_free(children);
+
+    // Simulação de resultados -> Chamar metodo que faz a busca aqui
+    Contato* dados = (Contato*)malloc(sizeof(Contato));
+    ListarContatosArquivo(&dados);
+    // const char *Contatos[] = {"Contato 1", "Contato 2", "Contato 3", "Contato 4", NULL};
+    // const char *Telefones[] = {"(11) 1111-1111", "(22) 1111-1111","(33) 1111-1111","(44) 1111-1111", NULL};
+
+    for (int i = 0;(strlen(dados[i].nome) != 0) && (strlen(dados[i].telefone) != 0) && (strlen(dados[i].email) != 0) && (strlen(dados[i].endereco) != 0); i++) {
+        if (strstr(dados[i].nome, query) != NULL || strlen(query) == 0) {
+            GtkWidget *linha = criarLinhaContato(dados[i].codigo, dados[i].nome, dados[i].telefone, dados[i].email, dados[i].endereco);
+            //-1 -> Final da lista (Parametro de posição)
+            gtk_list_box_insert(GTK_LIST_BOX(list_box), linha, -1);
+        }
+    }
+
+    gtk_widget_show_all(list_box);
+}
+
 // Cria e inicializa a janela principal
 static void iniciarJanela(GtkApplication *app) {
     GtkWidget *window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), "Agenda de Contatos");
-    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+    gtk_window_set_default_size(GTK_WINDOW(window), 1200, 600);
     gtk_window_set_icon_from_file(GTK_WINDOW(window), "icons/icon1.png", NULL);
 
     GtkWidget *verticalBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
