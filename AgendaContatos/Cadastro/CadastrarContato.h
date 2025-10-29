@@ -1,12 +1,12 @@
 #ifndef CADASTRARCONTATO_H
 #define CADASTRARCONTATO_H
 
-// Inclusão da estrutura de contato
-#include <../EstruturaContato.h>
-#include <../LerArquivo.h>
+// Inclusão de arquivos externos
+#include "../EstruturaContato.h"
+#include "../LerArquivo.h" // -> Ele é incluído pois tem o nome do arquivo definido
 
-//Headers do(s) método(s) para cadastro
-void CadastrarContato(FILE *arquivo, Contato **contatosSalvos, Contato novoContato);
-void CadastrarContato(Contato novoContato);
+//Headers dos métodos para cadastro
+void CadastrarNovoContato(FILE* arquivo, Contato novoContato);
+void CadastrarNovoContatoArquivo(Contato novoContato);
 
 #endif
