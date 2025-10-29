@@ -3,7 +3,7 @@
 #define CONSULTARCONTATO_H
 
 // Incluir Struct de Contato
-#include <EstruturaContato.h>
+#include "EstruturaContato.h"
 
 // Headers dos Métodos do Arquivo
 void ListarContatos(FILE* arquivo, Contato** dados);

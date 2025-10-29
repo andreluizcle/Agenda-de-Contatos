@@ -1,21 +1,32 @@
 #include <gtk/gtk.h>
-#include <string.h>  
+#include <string.h>
+
+#include "EstruturaContato.h"
+#include "ConsultarContato.h"
 
 // Lista global para os contatos
 GtkWidget *list_box;
 
 // Cria uma linha com o nome de um contato
-static GtkWidget* criarLinhaContato(const char *nome, const char *telefone) {
+static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50], char email[50], char endereco[50]) {
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
   GtkWidget *labelNome = gtk_label_new(nome);
   GtkWidget *labelTelefone = gtk_label_new(telefone);
-
+  GtkWidget *labelEmail = gtk_label_new(email);
+  GtkWidget *labelEndereco = gtk_label_new(endereco);
+  
   gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
   //Expand, Fill, Margin Expand->Crese se houver espaço, se estiver orientado vertical cresce vertical, Fill->Ocupa todo espaço que recebeu ou nao ocupa mas reserva
   gtk_box_pack_start(GTK_BOX(box), labelNome, TRUE, TRUE, 0);
 
   gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
   gtk_box_pack_start(GTK_BOX(box), labelTelefone, TRUE, TRUE, 0);
+
+  gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
+  gtk_box_pack_start(GTK_BOX(box), labelEmail, TRUE, TRUE, 0);
+
+  gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
+  gtk_box_pack_start(GTK_BOX(box), labelEndereco, TRUE, TRUE, 0);
 
   return box;
 }
@@ -32,12 +43,15 @@ static void atualizarPesquisa(const char *query) {
     g_list_free(children);
 
     // Simulação de resultados -> Chamar metodo que faz a busca aqui
-    const char *Contatos[] = {"Contato 1", "Contato 2", "Contato 3", "Contato 4", NULL};
-    const char *Telefones[] = {"(11) 1111-1111", "(22) 1111-1111","(33) 1111-1111","(44) 1111-1111", NULL};
+    Contato* dados = (Contato*)malloc(sizeof(Contato));
+    ListarContatosArquivo(&dados);
+    // const char *Contatos[] = {"Contato 1", "Contato 2", "Contato 3", "Contato 4", NULL};
+    // const char *Telefones[] = {"(11) 1111-1111", "(22) 1111-1111","(33) 1111-1111","(44) 1111-1111", NULL};
 
-    for (int i = 0; Contatos[i] != NULL; i++) {
-        if (strstr(Contatos[i], query) != NULL || strlen(query) == 0) {
-            GtkWidget *linha = criarLinhaContato(Contatos[i], Telefones[i]);
+    for (int i = 0; dados[i].codigo != NULL; i++) {
+        if (strstr(dados[i].nome, query) != NULL || strlen(query) == 0) {
+            GtkWidget *linha = criarLinhaContato(dados[i].codigo, dados[i].nome, 
+                dados[i].telefone, dados[i].email, dados[i].endereco);
             //-1 -> Final da lista (Parametro de posição)
             gtk_list_box_insert(GTK_LIST_BOX(list_box), linha, -1);
         }

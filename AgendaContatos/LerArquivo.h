@@ -2,7 +2,7 @@
 #define LERARQUIVO_H
 
 //
-#include <EstruturaContato.h>
+#include "EstruturaContato.h"
 
 //
 #define NOME_ARQUIVO "Contatos.txt"

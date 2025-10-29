@@ -3,9 +3,9 @@
 #include <stdlib.h>
 
 // Incluir Arquivos Externos
-#include <EstruturaContato.h>
-#include <ConsultarContato.h>
-#include <LerArquivo.h>
+#include "EstruturaContato.h"
+#include "ConsultarContato.h"
+#include "LerArquivo.h"
 
 // Comando para Listagem de Contatos
 void ListarContatos(FILE* arquivo, Contato** dados) {
