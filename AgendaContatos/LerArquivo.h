@@ -8,6 +8,7 @@
 #define NOME_ARQUIVO "Contatos.txt"
 
 //
-void Executar(void (*Comando)(FILE*, Contato**), const char* modo, Contato** dados);
+void Executar(void (*Comando)(FILE*, Contato), const char* modo, Contato dados);
+void Consultar(void (*Comando)(FILE*, Contato**), const char* modo, Contato** dados);
 
 #endif

@@ -22,5 +22,5 @@ void ListarContatos(FILE* arquivo, Contato** dados) {
 void ListarContatosArquivo(Contato** dados) {
     // Rodar o Comando no Arquivo
     void (*Comando)(FILE*, Contato**) = ListarContatos;
-    Executar(Comando, "r", dados);
+    Consultar(Comando, "r", dados);
 }
