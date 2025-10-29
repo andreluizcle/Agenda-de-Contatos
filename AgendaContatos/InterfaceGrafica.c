@@ -117,7 +117,7 @@ static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50]
   //Expand, Fill, Margin Expand->Crese se houver espaço, se estiver orientado vertical cresce vertical, Fill->Ocupa todo espaço que recebeu ou nao ocupa mas reserva
   gtk_box_pack_start(GTK_BOX(box), labelNome, TRUE, TRUE, 6);
 
-  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
+  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START); 
   gtk_box_pack_start(GTK_BOX(box), labelTelefone, TRUE, TRUE, 6);
 
   gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
