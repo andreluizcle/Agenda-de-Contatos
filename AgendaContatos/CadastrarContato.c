@@ -20,7 +20,7 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
     Contato contato;
     int cadastrado = 0;
 
-    while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^|]|%d\n", &contato.codigo, contato.nome, contato.telefone, contato.email, contato.endereco, contato.ativo) != EOF){
+    while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^|]|%d\n", &contato.codigo, contato.nome, contato.telefone, contato.email, contato.endereco, &contato.ativo) != EOF){
         if(!(contato.ativo && cadastrado)){
             fprintf(arquivo, "%d|%s|%s|%s|%s|%d\n", novoContato.codigo, novoContato.nome, novoContato.telefone, novoContato.email, novoContato.endereco, novoContato.ativo);
             cadastrado = 1;
