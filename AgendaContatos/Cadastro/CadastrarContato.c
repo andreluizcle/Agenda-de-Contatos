@@ -30,17 +30,17 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
     while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^\n]\n", &contato.codigo, contato.nome, 
         contato.telefone, contato.email, contato.endereco) != EOF){
             if(!inserido && strcmp(contato.nome, novoContato.nome)<=0){
-                fprintf(temporario, "%d|%s|%s|%s|%s\n", novoContato.codigo, novoContato.nome,
+                fprintf(arquivoTemporario, "%d|%s|%s|%s|%s\n", novoContato.codigo, novoContato.nome,
                 novoContato.telefone, novoContato.email, novoContato.endereco);
                 inserido = 1;
             }
             
-            fprintf(temporario, "%d|%s|%s|%s|%s\n", contato.codigo, contato.nome,
+            fprintf(arquivoTemporario, "%d|%s|%s|%s|%s\n", contato.codigo, contato.nome,
                 contato.telefone, contato.email, contato.endereco);
     }
     
     if(!inserido){
-        fprintf(temporario, "%d|%s|%s|%s|%s\n", novoContato.codigo, novoContato.nome,
+        fprintf(arquivoTemporario, "%d|%s|%s|%s|%s\n", novoContato.codigo, novoContato.nome,
                 novoContato.telefone, novoContato.email, novoContato.endereco);
     }
     
