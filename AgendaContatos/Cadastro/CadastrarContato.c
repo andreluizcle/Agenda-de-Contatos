@@ -29,7 +29,7 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
     // Escrita do arquivo temporário em ordem alfabética (incluindo o novo contato)
     while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^\n]\n", &contato.codigo, contato.nome, 
         contato.telefone, contato.email, contato.endereco) != EOF){
-            if(!inserido && strcmp(contato.nome, novoContato.nome)<=0){
+            if(!inserido && strcmp(novoContato.nome, contato.nome)<=0){
                 fprintf(arquivoTemporario, "%d|%s|%s|%s|%s\n", novoContato.codigo, novoContato.nome,
                 novoContato.telefone, novoContato.email, novoContato.endereco);
                 inserido = 1;
@@ -47,9 +47,9 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
     // TO DO: excluir o arquivo original e renomear o temporário
 }
 
-// Método de cadastro a ser acessado pela interface pública
+// Método de cadastro a ser acessado pela interface
 void CadastrarContatoArquivo(Contato novoContato){
     // Acessar o método de cadastro
-    void (*Comando)(FILE *referenciaArquivo, Contato contatoParaCadastro) = CadastrarContato;
+    void (*Comando)(FILE*, Contato) = CadastrarContato;
     Executar(Comando, "r+", novoContato);
 }
