@@ -10,6 +10,7 @@ GtkWidget *list_box;
 static void pesquisaClicada(GtkButton *button, gpointer user_data);
 void SalvarResultados(GtkButton *button, gpointer user_data);
 static void CriarContatoPopUp(GtkButton *button, gpointer user_data);
+static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char nome[50], char telefone[50], char email[50], char endereco[50]);
 static void Alterar(GtkButton *button, gpointer user_data);
 static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50], char email[50], char endereco[50]);
 static void atualizarPesquisa(const char *query);
@@ -50,13 +51,13 @@ void SalvarResultados(GtkButton *button, gpointer user_data) {
 static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     GtkWidget *janelaAnterior = GTK_WIDGET(user_data);
     GtkWidget *CaixaDialogo,*grid;
-    GtkWidget *inputNome, *inputTelefone, *labelNome, *labelTelefone, *botaoEnviar;
+    GtkWidget *inputNome, *inputTelefone, *labelNome, *labelTelefone, *labelEmail, *inputEmail, *labelEndereco, *inputEndereco, *botaoEnviar;
 
     CaixaDialogo = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(CaixaDialogo), "Adicionar Contato");
     gtk_window_set_transient_for(GTK_WINDOW(CaixaDialogo), GTK_WINDOW(janelaAnterior));
     gtk_window_set_modal(GTK_WINDOW(CaixaDialogo), TRUE); //Bloquear Interação com a janela anterior
-    gtk_window_set_default_size(GTK_WINDOW(CaixaDialogo), 250, 150);
+    gtk_window_set_default_size(GTK_WINDOW(CaixaDialogo), 250, 200);
     gtk_window_set_resizable(GTK_WINDOW(CaixaDialogo), FALSE);
     gtk_window_set_icon_from_file(GTK_WINDOW(CaixaDialogo), "icons/icon2.png", NULL);
 
@@ -72,16 +73,37 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxTelefone), 10);
     gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxTelefone);
 
+    GtkWidget *horizontalBoxEmail = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxEmail), 10);
+    gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxEmail);
+    
+    GtkWidget *horizontalBoxEndereco = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxEndereco), 10);
+    gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxEndereco);
+
     labelNome = gtk_label_new("Nome:    ");
     labelTelefone = gtk_label_new("Telefone:");
+    labelEmail = gtk_label_new("Email:   ");
+    labelEndereco = gtk_label_new("Endereço:");
     inputNome = gtk_entry_new();
     inputTelefone = gtk_entry_new();
+    inputEmail = gtk_entry_new();
+    inputEndereco = gtk_entry_new();
     botaoEnviar = gtk_button_new_with_label("Enviar");
 
+    gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
+    gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
+    gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
+    gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
+
     gtk_box_pack_start(GTK_BOX(horizontalBoxNome), labelNome, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(horizontalBoxNome), inputNome, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxNome), inputNome, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(horizontalBoxTelefone), labelTelefone, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(horizontalBoxTelefone), inputTelefone, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxTelefone), inputTelefone, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEmail), labelEmail, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEmail), inputEmail, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEndereco), labelEndereco, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEndereco), inputEndereco, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(verticalBox), botaoEnviar, TRUE, FALSE, 0);
 
     //Criar Dinamicamente com GTK para utilizar na SalvarResultados
@@ -95,12 +117,91 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
 
 static void Alterar(GtkButton *button, gpointer user_data){
     //Chamar um metodo de Excluir aqui
+    GtkWidget **entrada = (GtkWidget **) user_data;
+    const char *nome = gtk_label_get_text(GTK_LABEL(entrada[0]));
+    const char *telefone = gtk_label_get_text(GTK_LABEL(entrada[1]));
+    const char *email = gtk_label_get_text(GTK_LABEL(entrada[2]));
+    const char *endereco = gtk_label_get_text(GTK_LABEL(entrada[3]));
 
-    CriarContatoPopUp(NULL, NULL);
+    AtualizarContatoPopUp(NULL, NULL, g_strdup(nome), g_strdup(telefone), g_strdup(email), g_strdup(endereco));
+}
+
+static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char nome[50], char telefone[50], char email[50], char endereco[50]){
+    GtkWidget *janelaAnterior = GTK_WIDGET(user_data);
+    GtkWidget *CaixaDialogo,*grid;
+    GtkWidget *inputNome, *inputTelefone, *labelNome, *labelTelefone, *labelEmail, *inputEmail, *labelEndereco, *inputEndereco, *botaoEnviar;
+
+    CaixaDialogo = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(CaixaDialogo), "Atualizar Contato");
+    gtk_window_set_transient_for(GTK_WINDOW(CaixaDialogo), GTK_WINDOW(janelaAnterior));
+    gtk_window_set_modal(GTK_WINDOW(CaixaDialogo), TRUE); //Bloquear Interação com a janela anterior
+    gtk_window_set_default_size(GTK_WINDOW(CaixaDialogo), 250, 200);
+    gtk_window_set_resizable(GTK_WINDOW(CaixaDialogo), FALSE);
+    gtk_window_set_icon_from_file(GTK_WINDOW(CaixaDialogo), "icons/icon2.png", NULL);
+
+    GtkWidget *verticalBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(verticalBox), 10);
+    gtk_container_add(GTK_CONTAINER(CaixaDialogo), verticalBox);
+
+    GtkWidget *horizontalBoxNome = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxNome), 10);
+    gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxNome);
+
+    GtkWidget *horizontalBoxTelefone = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxTelefone), 10);
+    gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxTelefone);
+
+    GtkWidget *horizontalBoxEmail = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxEmail), 10);
+    gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxEmail);
+    
+    GtkWidget *horizontalBoxEndereco = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxEndereco), 10);
+    gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxEndereco);
+
+    labelNome = gtk_label_new("Nome:    ");
+    labelTelefone = gtk_label_new("Telefone:");
+    labelEmail = gtk_label_new("Email:   ");
+    labelEndereco = gtk_label_new("Endereço:");
+    inputNome = gtk_entry_new();
+    inputTelefone = gtk_entry_new();
+    inputEmail = gtk_entry_new();
+    inputEndereco = gtk_entry_new();
+    botaoEnviar = gtk_button_new_with_label("Enviar");
+
+    gtk_entry_set_text(GTK_ENTRY(inputNome), nome);
+    gtk_entry_set_text(GTK_ENTRY(inputTelefone), telefone);
+    gtk_entry_set_text(GTK_ENTRY(inputEmail), email);
+    gtk_entry_set_text(GTK_ENTRY(inputEndereco), endereco);
+
+    gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
+    gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
+    gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
+    gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
+
+    gtk_box_pack_start(GTK_BOX(horizontalBoxNome), labelNome, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxNome), inputNome, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxTelefone), labelTelefone, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxTelefone), inputTelefone, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEmail), labelEmail, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEmail), inputEmail, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEndereco), labelEndereco, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontalBoxEndereco), inputEndereco, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(verticalBox), botaoEnviar, TRUE, FALSE, 0);
+
+    //Criar Dinamicamente com GTK para utilizar na SalvarResultados
+    GtkWidget **entradas = g_new(GtkWidget *, 2);
+    entradas[0] = inputNome;
+    entradas[1] = inputTelefone;
+
+    g_signal_connect(botaoEnviar, "clicked", G_CALLBACK(SalvarResultados), entradas);
+    gtk_widget_show_all(CaixaDialogo);
 }
 
 static void Excluir(GtkButton *button, gpointer user_data){
     //Chamar um metodo de Excluir aqui
+    GtkWidget **codigo = (GtkWidget **) user_data;
+    printf("%d", codigo);
 }
 
 // Cria uma linha com o nome de um contato
@@ -112,11 +213,16 @@ static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50]
   GtkWidget *labelEndereco = gtk_label_new(endereco);
   GtkWidget *botaoAlterar = gtk_button_new_with_label("Alterar");
   GtkWidget *botaoExcluir = gtk_button_new_with_label("Excluir");
+  GtkWidget **informacoes = g_new(GtkWidget*, 4); // aloca vetor de 4 ponteiros
+  informacoes[0] = labelNome;
+  informacoes[1] = labelTelefone;
+  informacoes[2] = labelEmail;
+  informacoes[3] = labelEndereco;
 
   gtk_widget_set_halign(labelNome, GTK_ALIGN_CENTER);
   //Expand, Fill, Margin Expand->Crese se houver espaço, se estiver orientado vertical cresce vertical, Fill->Ocupa todo espaço que recebeu ou nao ocupa mas reserva
   gtk_box_pack_start(GTK_BOX(box), labelNome, FALSE, FALSE, 6);
-  gtk_widget_set_size_request(labelNome, 100, -1);
+  gtk_widget_set_size_request(labelNome, 200, -1);
 
   gtk_widget_set_halign(labelTelefone, GTK_ALIGN_CENTER); 
   gtk_widget_set_size_request(labelTelefone, 80, -1);
@@ -130,14 +236,14 @@ static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50]
   gtk_widget_set_size_request(labelEndereco, 80, -1);
   gtk_box_pack_start(GTK_BOX(box), labelEndereco, TRUE, TRUE, 6);
 
-  g_signal_connect(botaoAlterar, "clicked", G_CALLBACK(Alterar), NULL);
+  g_signal_connect(botaoAlterar, "clicked", G_CALLBACK(Alterar), informacoes);
   // dar tamanho mínimo ao botão para garantir visibilidade
   gtk_widget_set_size_request(botaoAlterar, 80, -1);
   gtk_widget_set_halign(botaoAlterar, GTK_ALIGN_END);
   gtk_box_pack_start(GTK_BOX(box), botaoAlterar, FALSE, FALSE, 6);
 
   gtk_widget_set_halign(botaoExcluir, GTK_ALIGN_END);
-  g_signal_connect(botaoExcluir, "clicked", G_CALLBACK(Excluir), NULL);
+  g_signal_connect(botaoExcluir, "clicked", G_CALLBACK(Excluir), GINT_TO_POINTER(codigo));
   // dar tamanho mínimo ao botão para garantir visibilidade
   gtk_widget_set_size_request(botaoExcluir, 80, -1);
   gtk_box_pack_start(GTK_BOX(box), botaoExcluir, FALSE, FALSE, 6);

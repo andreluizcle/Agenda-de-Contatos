@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 // Inclusão de arquivos externos (estruturas de funções, detalhes fundamentais etc)
-#include "../EstruturaContato.h"
-#include "../LerArquivo.h"
+#include "EstruturaContato.h"
+#include "LerArquivo.h"
 #include "CadastrarContato.h"
 
 // Método de cadastro do contato no arquivo
