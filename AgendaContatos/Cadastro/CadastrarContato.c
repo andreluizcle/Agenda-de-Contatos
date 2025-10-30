@@ -3,6 +3,6 @@
 #include <stdio.h>
 
 // Inclusão de arquivos externos (estruturas de funções, detalhes fundamentais etc)
-#include <../EstruturaContato.h>
-#include <CadastrarContato.h>
-#include <../LerArquivo.h>
+#include "../EstruturaContato.h"
+#include "../LerArquivo.h"
+#include "CadastrarContato.h"
