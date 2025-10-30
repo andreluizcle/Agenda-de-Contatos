@@ -8,7 +8,7 @@ typedef struct {
     char telefone[50];
     char email[50];
     char endereco[50];
-    int ativo=1;
+    int ativo;
 } Contato;
 
 #endif
