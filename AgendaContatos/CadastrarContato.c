@@ -10,45 +10,36 @@
 // Método de cadastro do contato no arquivo
 /* 
     A ideia do método era encontrar a posição alfabética em que o novo contato
-    deveria ser inserido. Porém, os métodos de inserção de dados em arquivo não
-    criam um espaço extra, "empurrando" os bytes seguintes, quando se insere
-    bytes no meio de um arquivo. Portanto faz-se necessário criar um arquivo
-    temporário, efetuar a gravação de dados em ordem alfabética (incluindo o
-    novo contato), excluir o arquivo original e renomear o novo arquivo ;)
+    deveria ser inserido e inserí-lo, porém isso tornou-se inviável por ser
+    possível apenas com a criação de um arquivo temporário e um processo exten-
+    so demais para ser descrito aqui.
+    Portanto a função é implementada com a sobrescrita de um contato excluído
+    ou com o registro normal (no fim do .txt) ;]
 */
 void CadastrarContato(FILE* arquivo, Contato novoContato){
     Contato contato;
-    int inserido = 0;
-    
-    // Cria um arquivo temporário
-    FILE *arquivoTemporario = fopen("temporario.txt", "w");
-    
-    // Retorna o poteiro pro começo do arquivo
-    rewind(arquivo);
+    int cadastrado = 0;
+    long posicaoAtual = 0;
 
-    // Escrita do arquivo temporário em ordem alfabética (incluindo o novo contato)
-    while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^\n]\n", &contato.codigo, contato.nome, 
-        contato.telefone, contato.email, contato.endereco) != EOF){
-            if(!inserido && strcmp(novoContato.nome, contato.nome)<=0){
-                fprintf(arquivoTemporario, "%d|%s|%s|%s|%s\n", novoContato.codigo, novoContato.nome,
-                novoContato.telefone, novoContato.email, novoContato.endereco);
-                inserido = 1;
-            }
-            
-            fprintf(arquivoTemporario, "%d|%s|%s|%s|%s\n", contato.codigo, contato.nome,
-                contato.telefone, contato.email, contato.endereco);
+    while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^|]|%d\n", &contato.codigo, contato.nome, contato.telefone, contato.email, contato.endereco, &contato.ativo) != EOF){
+        if(!(contato.ativo && cadastrado)){
+            fseek(arquivo, posicaoAtual, SEEK_SET);
+            fprintf(arquivo, "%d|%s|%s|%s|%s|%d\n", novoContato.codigo, novoContato.nome, novoContato.telefone, novoContato.email, novoContato.endereco, novoContato.ativo);
+            cadastrado = 1;
+            break;
+        }
+        posicaoAtual = ftell(arquivo);
     }
-    
-    if(!inserido){
-        fprintf(arquivoTemporario, "%d|%s|%s|%s|%s\n", novoContato.codigo, novoContato.nome,
-                novoContato.telefone, novoContato.email, novoContato.endereco);
-    }
-    
-    // TO DO: excluir o arquivo original e renomear o temporário
+
+    if(!cadastrado)
+        fprintf(arquivo, "%d|%s|%s|%s|%s|%d\n", novoContato.codigo, novoContato.nome, novoContato.telefone, novoContato.email, novoContato.endereco, novoContato.ativo);
 }
 
 // Método de cadastro a ser acessado pela interface
 void CadastrarContatoArquivo(Contato novoContato){
+    // Definição de valor base para o campo de controle de existência de contato
+    novoContato.ativo = 1;
+
     // Acessar o método de cadastro
     void (*Comando)(FILE*, Contato) = CadastrarContato;
     Executar(Comando, "r+", novoContato);
