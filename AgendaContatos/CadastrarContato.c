@@ -24,6 +24,7 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
         if(!(contato.ativo && cadastrado)){
             fprintf(arquivo, "%d|%s|%s|%s|%s|%d\n", novoContato.codigo, novoContato.nome, novoContato.telefone, novoContato.email, novoContato.endereco, novoContato.ativo);
             cadastrado = 1;
+            break;
         }
     }
 
