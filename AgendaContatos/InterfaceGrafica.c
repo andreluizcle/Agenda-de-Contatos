@@ -113,22 +113,27 @@ static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50]
   GtkWidget *botaoAlterar = gtk_button_new_with_label("Alterar");
   GtkWidget *botaoExcluir = gtk_button_new_with_label("Excluir");
 
-  gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
+  gtk_widget_set_halign(labelNome, GTK_ALIGN_CENTER);
   //Expand, Fill, Margin Expand->Crese se houver espaço, se estiver orientado vertical cresce vertical, Fill->Ocupa todo espaço que recebeu ou nao ocupa mas reserva
-  gtk_box_pack_start(GTK_BOX(box), labelNome, TRUE, TRUE, 6);
+  gtk_box_pack_start(GTK_BOX(box), labelNome, FALSE, FALSE, 6);
+  gtk_widget_set_size_request(labelNome, 100, -1);
 
-  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START); 
+  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_CENTER); 
+  gtk_widget_set_size_request(labelTelefone, 80, -1);
   gtk_box_pack_start(GTK_BOX(box), labelTelefone, TRUE, TRUE, 6);
 
-  gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
+  gtk_widget_set_halign(labelEmail, GTK_ALIGN_CENTER);
+  gtk_widget_set_size_request(labelEmail, 80, -1);
   gtk_box_pack_start(GTK_BOX(box), labelEmail, TRUE, TRUE, 6);
 
-  gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
+  gtk_widget_set_halign(labelEndereco, GTK_ALIGN_CENTER);
+  gtk_widget_set_size_request(labelEndereco, 80, -1);
   gtk_box_pack_start(GTK_BOX(box), labelEndereco, TRUE, TRUE, 6);
 
   g_signal_connect(botaoAlterar, "clicked", G_CALLBACK(Alterar), NULL);
   // dar tamanho mínimo ao botão para garantir visibilidade
   gtk_widget_set_size_request(botaoAlterar, 80, -1);
+  gtk_widget_set_halign(botaoAlterar, GTK_ALIGN_END);
   gtk_box_pack_start(GTK_BOX(box), botaoAlterar, FALSE, FALSE, 6);
 
   gtk_widget_set_halign(botaoExcluir, GTK_ALIGN_END);
@@ -154,8 +159,6 @@ static void atualizarPesquisa(const char *query) {
     // Simulação de resultados -> Chamar metodo que faz a busca aqui
     Contato* dados = (Contato*)malloc(sizeof(Contato));
     ListarContatosArquivo(&dados);
-    // const char *Contatos[] = {"Contato 1", "Contato 2", "Contato 3", "Contato 4", NULL};
-    // const char *Telefones[] = {"(11) 1111-1111", "(22) 1111-1111","(33) 1111-1111","(44) 1111-1111", NULL};
 
     for (int i = 0;(strlen(dados[i].nome) != 0) && (strlen(dados[i].telefone) != 0) && (strlen(dados[i].email) != 0) && (strlen(dados[i].endereco) != 0); i++) {
         if (strstr(dados[i].nome, query) != NULL || strlen(query) == 0) {
