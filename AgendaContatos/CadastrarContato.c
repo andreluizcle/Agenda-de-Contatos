@@ -7,6 +7,7 @@
 #include "Headers/EstruturaContato.h"
 #include "Headers/LerArquivo.h"
 #include "Headers/CadastrarContato.h"
+#include "Headers/ConsultarContato.h"
 
 // Método de cadastro do contato no arquivo
 void CadastrarContato(FILE* arquivo, Contato novoContato){
@@ -15,6 +16,7 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
     // long é usado para trabalhar com valores em bytes (ponteiro de um arquivo, por exemplo)
     long posicaoAtual = 0;
 
+    // Cadastrando o novo contato
     while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^|]|%d\n", &contato.codigo, contato.nome, contato.telefone, contato.email, contato.endereco, &contato.ativo) != EOF){
         if(!(contato.ativo) && !(cadastrado)){
             // Move o ponteiro (em bytes) para o começo da linha em que ativo == 0
@@ -38,6 +40,9 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
 void CadastrarContatoArquivo(Contato novoContato){
     // Definição de valor base para o campo de controle de existência de contato
     novoContato.ativo = 1;
+
+    // Definição do código do novo contato
+    novoContato.codigo = UltimoCodigoContato();
 
     // Preenchendo todas as strings até o tamanho máximo para que todos os contatos ocupem o mesmo espaço na memória
     while(strlen(novoContato.nome)<(tamanhoPadrao-1)){

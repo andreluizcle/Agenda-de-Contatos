@@ -55,3 +55,23 @@ void ListarContatosArquivo(Contato** dados) {
     void (*Comando)(FILE*, Contato**) = ListarContatos;
     Consultar(Comando, "r", dados);
 }
+
+int UltimoCodigoContato(){
+    FILE* arquivo = fopen(NOME_ARQUIVO, "r");
+    if (arquivo == NULL) {
+        perror("Ocorreu um erro ao abrir o arquivo!");
+        return;
+    }
+
+    int ultimoCodigo = 0;
+    Contato contato;
+
+    while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^|]|%d\n", &contato.codigo, contato.nome,
+    contato.telefone, contato.email, contato.endereco, &contato.ativo) != EOF){
+        ultimoCodigo = contato.codigo > ultimoCodigo ? contato.codigo : ultimoCodigo;
+    }
+
+    fclose(arquivo);
+
+    return ++ultimoCodigo;
+}
