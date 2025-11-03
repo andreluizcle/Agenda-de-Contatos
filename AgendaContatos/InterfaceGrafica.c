@@ -1,8 +1,9 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
-#include "EstruturaContato.h"
-#include "ConsultarContato.h"
+#include "Headers/EstruturaContato.h"
+#include "Headers/ConsultarContato.h"
+#include "Headers/CadastrarContato.h"
 
 // Lista global para os contatos
 GtkWidget *list_box;
@@ -30,18 +31,15 @@ void SalvarResultados(GtkButton *button, gpointer user_data) {
     //get_text retorna ponteiro para dentro do proprio Widget
     const char *nome = gtk_entry_get_text(GTK_ENTRY(entrada[0]));
     const char *telefone = gtk_entry_get_text(GTK_ENTRY(entrada[1]));
+    const char *email = gtk_entry_get_text(GTK_ENTRY(entrada[2]));
+    const char *endereco = gtk_entry_get_text(GTK_ENTRY(entrada[3]));
 
-    char *dados[2];
-    dados[0] = g_strdup(nome); //Copia 
-    dados[1] = g_strdup(telefone);
-
-    //Método para salvar dados aqui
-    printf("Nome: %s\n", dados[0]);
-    printf("Telefone: %s\n", dados[1]);
-
-    g_free(dados[0]);
-    g_free(dados[1]);
-    g_free(entrada);
+    Contato novoContato;
+    strcpy(novoContato.nome, g_strdup(nome));
+    strcpy(novoContato.telefone, g_strdup(telefone));
+    strcpy(novoContato.email, g_strdup(email));
+    strcpy(novoContato.endereco, g_strdup(endereco));
+    CadastrarContatoArquivo(novoContato);
 
     GtkWidget *janelaAtual = gtk_widget_get_toplevel(GTK_WIDGET(button));
     gtk_widget_destroy(janelaAtual);
@@ -107,9 +105,11 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     gtk_box_pack_start(GTK_BOX(verticalBox), botaoEnviar, TRUE, FALSE, 0);
 
     //Criar Dinamicamente com GTK para utilizar na SalvarResultados
-    GtkWidget **entradas = g_new(GtkWidget *, 2);
+    GtkWidget **entradas = g_new(GtkWidget *, 4);
     entradas[0] = inputNome;
     entradas[1] = inputTelefone;
+    entradas[2] = inputEmail;
+    entradas[3] = inputEndereco;
 
     g_signal_connect(botaoEnviar, "clicked", G_CALLBACK(SalvarResultados), entradas);
     gtk_widget_show_all(CaixaDialogo);
@@ -266,7 +266,7 @@ static void atualizarPesquisa(const char *query) {
     Contato* dados = (Contato*)malloc(sizeof(Contato));
     ListarContatosArquivo(&dados);
 
-    for (int i = 0;(strlen(dados[i].nome) != 0) && (strlen(dados[i].telefone) != 0) && (strlen(dados[i].email) != 0) && (strlen(dados[i].endereco) != 0); i++) {
+    for (int i = 0;i< totalContatos; i++) {
         if (strstr(dados[i].nome, query) != NULL || strlen(query) == 0) {
             GtkWidget *linha = criarLinhaContato(dados[i].codigo, dados[i].nome, dados[i].telefone, dados[i].email, dados[i].endereco);
             //-1 -> Final da lista (Parametro de posição)

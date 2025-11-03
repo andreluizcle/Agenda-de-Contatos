@@ -4,9 +4,9 @@
 #include <string.h>
 
 // Inclusão de arquivos externos (estruturas de funções, detalhes fundamentais etc)
-#include "EstruturaContato.h"
-#include "LerArquivo.h"
-#include "CadastrarContato.h"
+#include "Headers/EstruturaContato.h"
+#include "Headers/LerArquivo.h"
+#include "Headers/CadastrarContato.h"
 
 // Método de cadastro do contato no arquivo
 void CadastrarContato(FILE* arquivo, Contato novoContato){

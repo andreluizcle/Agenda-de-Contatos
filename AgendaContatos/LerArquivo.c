@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "EstruturaContato.h"
-#include "LerArquivo.h"
+#include "Headers/EstruturaContato.h"
+#include "Headers/LerArquivo.h"
 
 //
 void Executar(void (*Comando)(FILE*, Contato), const char* modo, Contato dados)
