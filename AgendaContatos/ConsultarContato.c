@@ -56,6 +56,7 @@ void ListarContatosArquivo(Contato** dados) {
     Consultar(Comando, "r", dados);
 }
 
+// Método para verificar o maior código de contato já informado e retornar ele +1 (p/ o novo contato)
 int UltimoCodigoContato(){
     FILE* arquivo = fopen(NOME_ARQUIVO, "r");
     if (arquivo == NULL) {
