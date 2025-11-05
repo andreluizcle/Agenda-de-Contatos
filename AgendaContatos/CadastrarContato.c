@@ -13,27 +13,25 @@
 void CadastrarContato(FILE* arquivo, Contato novoContato){
     Contato contato;
     int cadastrado = 0;
-    // long é usado para trabalhar com valores em bytes (ponteiro de um arquivo, por exemplo)
-    long posicaoAtual = 0;
 
     // Cadastrando o novo contato
-    while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^|]|%d\n", &contato.codigo, contato.nome, contato.telefone, contato.email, contato.endereco, &contato.ativo) != EOF){
+    while(fread(&contato, sizeof(Contato), 1, arquivo) == 1){
         if(!(contato.ativo) && !(cadastrado)){
-            // Move o ponteiro (em bytes) para o começo da linha em que ativo == 0
-            fseek(arquivo, posicaoAtual, SEEK_SET);
+            // Move o ponteiro (em bytes) para o começo da linha em que ativo == 0 p/ sobrescrita
+            fseek(arquivo, -(long)sizeof(Contato), SEEK_SET);
             
-            fprintf(arquivo, "%d|%s|%s|%s|%s|%d\n", novoContato.codigo, novoContato.nome, novoContato.telefone, novoContato.email, novoContato.endereco, novoContato.ativo);
+            fwrite(&novoContato, sizeof(Contato), 1, arquivo);
             cadastrado = 1;
             break;
         }
-        // Recebe a posição atual do ponteiro - vem depois do fprintf para que o ponteiro sempre esteja no começo da linha
-        posicaoAtual = ftell(arquivo);
     }
 
     // Se não houver nenhum contato que foi excluído, não entrará na primeira condicional
     // necessitando, então, dessa
-    if(!cadastrado)
-        fprintf(arquivo, "%d|%s|%s|%s|%s|%d\n", novoContato.codigo, novoContato.nome, novoContato.telefone, novoContato.email, novoContato.endereco, novoContato.ativo);
+    if(!cadastrado){
+        fseek(arquivo, 0, SEEK_END);
+        fwrite()
+    }
 }
 
 // Método de cadastro a ser acessado pela interface
@@ -44,21 +42,7 @@ void CadastrarContatoArquivo(Contato novoContato){
     // Definição do código do novo contato
     novoContato.codigo = UltimoCodigoContato();
 
-    // Preenchendo todas as strings até o tamanho máximo para que todos os contatos ocupem o mesmo espaço na memória
-    while(strlen(novoContato.nome)<(tamanhoPadrao-1)){
-        strcat(novoContato.nome, " ");
-    }
-    while(strlen(novoContato.telefone)<(tamanhoPadrao-1)){
-        strcat(novoContato.telefone, " ");
-    }
-    while(strlen(novoContato.email)<(tamanhoPadrao-1)){
-        strcat(novoContato.email, " ");
-    }
-    while(strlen(novoContato.endereco)<(tamanhoPadrao-1)){
-        strcat(novoContato.endereco, " ");
-    }
-
     // Acessar o método de cadastro
     void (*Comando)(FILE*, Contato) = CadastrarContato;
-    Executar(Comando, "r+", novoContato);
+    Executar(Comando, "rb+", novoContato);
 }

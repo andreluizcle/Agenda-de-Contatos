@@ -58,7 +58,7 @@ void ListarContatosArquivo(Contato** dados) {
 
 // Método para verificar o maior código de contato já informado e retornar ele +1 (p/ o novo contato)
 int UltimoCodigoContato(){
-    FILE* arquivo = fopen(NOME_ARQUIVO, "r");
+    FILE* arquivo = fopen(NOME_ARQUIVO, "rb");
     if (arquivo == NULL) {
         perror("Ocorreu um erro ao abrir o arquivo!");
         return;
@@ -67,8 +67,7 @@ int UltimoCodigoContato(){
     int ultimoCodigo = 0;
     Contato contato;
 
-    while(fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^|]|%d\n", &contato.codigo, contato.nome,
-    contato.telefone, contato.email, contato.endereco, &contato.ativo) != EOF){
+    while(fread(&contato, sizeof(Contato), 1, arquivo) == 1){
         ultimoCodigo = contato.codigo > ultimoCodigo ? contato.codigo : ultimoCodigo;
     }
 
