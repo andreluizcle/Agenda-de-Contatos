@@ -30,7 +30,7 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
     // necessitando, então, dessa
     if(!cadastrado){
         fseek(arquivo, 0, SEEK_END);
-        fwrite()
+        fwrite(&novoContato, sizeof(Contato), 1, arquivo);
     }
 }
 
