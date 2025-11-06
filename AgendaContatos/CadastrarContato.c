@@ -18,7 +18,7 @@ void CadastrarContato(FILE* arquivo, Contato novoContato){
     while(fread(&contato, sizeof(Contato), 1, arquivo) == 1){
         if(!(contato.ativo) && !(cadastrado)){
             // Move o ponteiro (em bytes) para o começo da linha em que ativo == 0 p/ sobrescrita
-            fseek(arquivo, -(long)sizeof(Contato), SEEK_SET);
+            fseek(arquivo, -(long)sizeof(Contato), SEEK_CUR);
             
             fwrite(&novoContato, sizeof(Contato), 1, arquivo);
             cadastrado = 1;
