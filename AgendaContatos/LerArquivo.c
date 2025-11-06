@@ -22,19 +22,19 @@ void Executar(void (*Comando)(FILE*, Contato), const char* modo, Contato dados)
 }
 
 //
-void Consultar(void (*Comando)(FILE*, Contato**), const char* modo, Contato** dados)
+int Consultar(int (*Comando)(FILE*, Contato**), const char* modo, Contato** dados)
 {
     // Verificar se o Arquivo Existe
     FILE* arquivo = fopen(NOME_ARQUIVO, modo);
     if (arquivo == NULL) {
         perror("Ocorreu um erro ao abrir o arquivo!");
-        return;
+        return 0;
     }
     
     // Executar o Comando no Arquivo
-    Comando(arquivo, dados);
+    int numero = Comando(arquivo, dados);
     
     // Fechar Arquivo após Execução
     fclose(arquivo);
-    return;
+    return numero;
 }

@@ -6,8 +6,8 @@
 #include "EstruturaContato.h"
 
 // Headers dos Métodos do Arquivo
-void ListarContatos(FILE* arquivo, Contato** dados);
-void ListarContatosArquivo(Contato** dados);
+int ListarContatos(FILE* arquivo, Contato** dados);
+int ListarContatosArquivo(Contato** dados);
 int UltimoCodigoContato();
 extern int totalContatos;
 

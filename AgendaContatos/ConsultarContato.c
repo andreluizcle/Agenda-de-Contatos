@@ -7,53 +7,42 @@
 #include "Headers/EstruturaContato.h"
 #include "Headers/LerArquivo.h"
 #include "Headers/ConsultarContato.h"
-int totalContatos = 0;
-/*void ListarContatos(FILE* arquivo, Contato** dados) {
-    // Ler o Arquivo e Guardar os Dados
-    int indice = -1;
-    do {
+
+// Método para Listar Contatos
+int ListarContatos(FILE* arquivo, Contato** dados) {
+    // Ler Cada Bloco do Arquivo
+    int indice = 0, linhaLida = 0;
+    Contato contatoLido;
+    
+    while ((linhaLida = fread(&contatoLido, sizeof(Contato), 1, arquivo)) > 0) {
         // Aumentar o Tamanho do Ponteiro para Guardar todos os Contatos
-        indice++;
-        int len = strlen((*dados)[indice].endereco); 
-        (*dados)[indice].endereco[len - 2] = '\0'; 
         *dados = (Contato*)realloc(*dados, (indice+1)*sizeof(Contato));
-    }
-    while (fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^\n]\n", &(*dados)[indice].codigo, 
-        (*dados)[indice].nome, (*dados)[indice].telefone, (*dados)[indice].email, 
-        (*dados)[indice].endereco) != EOF);
-}*/
-void ListarContatos(FILE *arquivo, Contato **dados) {
-    int indice = -1;
-    totalContatos = 0; // zera antes de começar a contagem
-    do {
+        
+        // Guardar os Dados do Ponteiro no Vetor
+        (*dados)[indice].codigo = contatoLido.codigo;
+        strcpy((*dados)[indice].nome, contatoLido.nome);
+        strcpy((*dados)[indice].telefone, contatoLido.telefone);
+        strcpy((*dados)[indice].email, contatoLido.email);
+        strcpy((*dados)[indice].endereco, contatoLido.endereco);
+        (*dados)[indice].ativo = contatoLido.ativo;
+        printf("%s\n", (*dados)[indice].nome);
+        
+        // Mudar Índice para Próxima Leitura
         indice++;
-
-        // Aumentar o tamanho do vetor de contatos
-        *dados = (Contato *)realloc(*dados, (indice + 1) * sizeof(Contato));
-
-        // Ler um contato do arquivo
-        if (fscanf(arquivo, "%d|%[^|]|%[^|]|%[^|]|%[^\n]\n",
-                   &(*dados)[indice].codigo,
-                   (*dados)[indice].nome,
-                   (*dados)[indice].telefone,
-                   (*dados)[indice].email,
-                   (*dados)[indice].endereco) == EOF) {
-            break;
-        }
-
-        int len = strlen((*dados)[indice].endereco);
-        if (len >= 2) {
-            (*dados)[indice].endereco[len - 2] = '\0';
-        }
-        totalContatos++;
-    } while (!feof(arquivo));
+    }
+    
+    // Retornar Quantidade de Contatos
+    return indice;
 }
 
 // Método para Listar Contatos no Arquivo
-void ListarContatosArquivo(Contato** dados) {
+int ListarContatosArquivo(Contato** dados) {
     // Rodar o Comando no Arquivo
-    void (*Comando)(FILE*, Contato**) = ListarContatos;
-    Consultar(Comando, "r", dados);
+    int (*Comando)(FILE*, Contato**) = ListarContatos;
+    int quantidadeContatos = Consultar(Comando, "r", dados);
+
+    // Retornar Quantidade de Contatos
+    return quantidadeContatos;
 }
 
 // Método para verificar o maior código de contato já informado e retornar ele +1 (p/ o novo contato)
@@ -61,7 +50,7 @@ int UltimoCodigoContato(){
     FILE* arquivo = fopen(NOME_ARQUIVO, "rb");
     if (arquivo == NULL) {
         perror("Ocorreu um erro ao abrir o arquivo!");
-        return;
+        return 0;
     }
 
     int ultimoCodigo = 0;

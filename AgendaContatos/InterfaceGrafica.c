@@ -264,7 +264,7 @@ static void atualizarPesquisa(const char *query) {
 
     // Simulação de resultados -> Chamar metodo que faz a busca aqui
     Contato* dados = (Contato*)malloc(sizeof(Contato));
-    ListarContatosArquivo(&dados);
+    int totalContatos = ListarContatosArquivo(&dados);
 
     for (int i = 0;i< totalContatos; i++) {
         if (strstr(dados[i].nome, query) != NULL || strlen(query) == 0) {
