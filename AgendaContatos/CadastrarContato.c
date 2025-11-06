@@ -40,7 +40,9 @@ void CadastrarContatoArquivo(Contato novoContato){
     novoContato.ativo = 1;
 
     // Definição do código do novo contato
-    novoContato.codigo = UltimoCodigoContato();
+    Contato* ultimoContato = (Contato*)malloc(sizeof(Contato));
+    ConsultarUltimoContatoArquivo(&ultimoContato);
+    novoContato.codigo = ultimoContato->codigo + 1;
 
     // Acessar o método de cadastro
     void (*Comando)(FILE*, Contato) = CadastrarContato;

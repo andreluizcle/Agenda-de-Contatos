@@ -8,13 +8,13 @@
 #include "Headers/LerArquivo.h"
 #include "Headers/ConsultarContato.h"
 
-// Método para Listar Contatos
+// Métodos de Consulta de Contatos
 int ListarContatos(FILE* arquivo, Contato** dados) {
     // Ler Cada Bloco do Arquivo
-    int indice = 0, linhaLida = 0;
+    int indice = 0;
     Contato contatoLido;
     
-    while ((linhaLida = fread(&contatoLido, sizeof(Contato), 1, arquivo)) > 0) {
+    while (fread(&contatoLido, sizeof(Contato), 1, arquivo) > 0) {
         // Aumentar o Tamanho do Ponteiro para Guardar todos os Contatos
         *dados = (Contato*)realloc(*dados, (indice+1)*sizeof(Contato));
         
@@ -25,7 +25,6 @@ int ListarContatos(FILE* arquivo, Contato** dados) {
         strcpy((*dados)[indice].email, contatoLido.email);
         strcpy((*dados)[indice].endereco, contatoLido.endereco);
         (*dados)[indice].ativo = contatoLido.ativo;
-        printf("%s\n", (*dados)[indice].nome);
         
         // Mudar Índice para Próxima Leitura
         indice++;
@@ -35,33 +34,41 @@ int ListarContatos(FILE* arquivo, Contato** dados) {
     return indice;
 }
 
-// Método para Listar Contatos no Arquivo
 int ListarContatosArquivo(Contato** dados) {
     // Rodar o Comando no Arquivo
     int (*Comando)(FILE*, Contato**) = ListarContatos;
-    int quantidadeContatos = Consultar(Comando, "r", dados);
+    int quantidadeContatos = Consultar(Comando, "rb", dados);
 
     // Retornar Quantidade de Contatos
     return quantidadeContatos;
 }
 
-// Método para verificar o maior código de contato já informado e retornar ele +1 (p/ o novo contato)
-int UltimoCodigoContato(){
-    FILE* arquivo = fopen(NOME_ARQUIVO, "rb");
-    if (arquivo == NULL) {
-        perror("Ocorreu um erro ao abrir o arquivo!");
-        return 0;
-    }
-
+int ConsultarUltimoContato(FILE* arquivo, Contato** dados) {
+    // Ler Cada Bloco do Arquivo
     int ultimoCodigo = 0;
-    Contato contato;
+    Contato contatoLido;
 
-    while(fread(&contato, sizeof(Contato), 1, arquivo) == 1){
-        if(contato.ativo)
-            ultimoCodigo = contato.codigo > ultimoCodigo ? contato.codigo : ultimoCodigo;
+    while(fread(&contatoLido, sizeof(Contato), 1, arquivo) > 0) {
+        // Guardar os Dados Somente do Último Contato
+        if(contatoLido.ativo && contatoLido.codigo > ultimoCodigo) {
+            (*dados)[0].codigo = contatoLido.codigo;
+            strcpy((*dados)[0].nome, contatoLido.nome);
+            strcpy((*dados)[0].telefone, contatoLido.telefone);
+            strcpy((*dados)[0].email, contatoLido.email);
+            strcpy((*dados)[0].endereco, contatoLido.endereco);
+            (*dados)[0].ativo = contatoLido.ativo;
+        }
     }
 
-    fclose(arquivo);
+    // Retornar Quantidade de Contatos
+    return 1;
+}
 
-    return ++ultimoCodigo;
+int ConsultarUltimoContatoArquivo(Contato** dados) {
+    // Rodar o Comando no Arquivo
+    int (*Comando)(FILE*, Contato**) = ConsultarUltimoContato;
+    int ultimoCodigo = Consultar(Comando, "rb", dados);
+
+    // Retornar Quantidade de Contatos
+    return ultimoCodigo;
 }

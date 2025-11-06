@@ -8,6 +8,10 @@
 // Headers dos Métodos do Arquivo
 int ListarContatos(FILE* arquivo, Contato** dados);
 int ListarContatosArquivo(Contato** dados);
+
+int ConsultarUltimoContato(FILE* arquivo, Contato** dados);
+int ConsultarUltimoContatoArquivo(Contato** dados);
+
 int UltimoCodigoContato();
 extern int totalContatos;
 
