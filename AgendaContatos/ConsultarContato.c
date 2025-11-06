@@ -68,7 +68,8 @@ int UltimoCodigoContato(){
     Contato contato;
 
     while(fread(&contato, sizeof(Contato), 1, arquivo) == 1){
-        ultimoCodigo = contato.codigo > ultimoCodigo ? contato.codigo : ultimoCodigo;
+        if(contato.ativo)
+            ultimoCodigo = contato.codigo > ultimoCodigo ? contato.codigo : ultimoCodigo;
     }
 
     fclose(arquivo);
