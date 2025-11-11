@@ -265,38 +265,17 @@ static void atualizarPesquisa(const char *query) {
 
     // Listar todos os contatos cadastrados (e ativos)
     Contato* dados = (Contato*)malloc(sizeof(Contato));
-    int quantidadeContatos = ListarContatosArquivo(&dados);
+    int quantidadeContatos = 0;
+    
+    if (strlen(query) == 0)
+        quantidadeContatos = ListarContatosArquivo(&dados);
+    else
+        quantidadeContatos = ListarContatosFiltradoArquivo(&dados, query);
 
     for (int i = 0; i < quantidadeContatos; i++) {
-        // Criar variáveis e cópias das strings de pesquisa
-        int filtrado = 1;
-        char* nomeContato = (char*)malloc((strlen(dados[i].nome) + 1)*sizeof(char));
-        char* pesquisa = (char*)malloc((strlen(query) + 1)*sizeof(char));
-        strcpy(nomeContato, dados[i].nome);
-        strcpy(pesquisa, query);
-
-        // Colocar cada letra em maiúscula e verificar se elas são iguais
-        if (strlen(query) != 0) {
-            for (int j = 0; j < strlen(query); j++) {
-                nomeContato[j] -= nomeContato[j] > 95 ? 32 : 0;
-                pesquisa[j] -= pesquisa[j] > 95 ? 32 : 0;
-
-                if (nomeContato[j] - pesquisa[j] != 0) {
-                    filtrado = 0;
-                    break;
-                }
-            }
-        }
-
-        // Limpar memória das cópias das strings de pesquisa
-        free(nomeContato); free(pesquisa);
-
-        // Exibir somente os contatos filtrados
-        if (filtrado == 1 || strlen(query) == 0) {
-            GtkWidget *linha = criarLinhaContato(dados[i].codigo, dados[i].nome, dados[i].telefone, dados[i].email, dados[i].endereco);
-            //-1 -> Final da lista (Parametro de posição)
-            gtk_list_box_insert(GTK_LIST_BOX(list_box), linha, -1);
-        }
+        GtkWidget *linha = criarLinhaContato(dados[i].codigo, dados[i].nome, dados[i].telefone, dados[i].email, dados[i].endereco);
+        //-1 -> Final da lista (Parametro de posição)
+        gtk_list_box_insert(GTK_LIST_BOX(list_box), linha, -1);
     }
 
     // Limpar memória da lista de contatos

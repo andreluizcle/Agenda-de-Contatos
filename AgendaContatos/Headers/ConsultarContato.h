@@ -8,6 +8,7 @@
 // Headers dos Métodos do Arquivo
 int ListarContatos(FILE* arquivo, Contato** dados);
 int ListarContatosArquivo(Contato** dados);
+int ListarContatosFiltradoArquivo(Contato ** listaContatos, const char* filtro);
 
 int ConsultarUltimoContato(FILE* arquivo, Contato** dados);
 int ConsultarUltimoContatoArquivo(Contato** dados);

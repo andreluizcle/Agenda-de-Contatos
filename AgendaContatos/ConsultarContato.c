@@ -45,6 +45,47 @@ int ListarContatosArquivo(Contato** listaContatos) {
     return quantidadeContatos;
 }
 
+int ListarContatosFiltradoArquivo(Contato** listaContatos, const char* filtro) {
+    // Listar todos os contatos cadastrados (e ativos)
+    int indice = 0;
+    Contato* contatos = (Contato*)malloc(sizeof(Contato));
+    int quantidadeContatos = ListarContatosArquivo(&contatos);
+
+    // Percorrer por cada contato e verificar cada letra
+    for (int i = 0; i < quantidadeContatos; i++) {
+        int filtrado = 1;
+        for (int j = 0; j < strlen(filtro); j++) {
+            int diferenca = contatos[i].nome[j] - filtro[j];
+
+            if (!(diferenca == 0 || (contatos[i].nome[j] < 95 && diferenca == -32) ||
+            (contatos[i].nome[j] > 95 && diferenca == 32))) {
+                filtrado = 0;
+                break;
+            }
+        }
+
+        // Após verificação, adicionar o contato a nova lista
+        if (filtrado == 1) {
+            // Aumentar o Tamanho do Ponteiro para Guardar todos os Contatos
+            *listaContatos = (Contato*)realloc(*listaContatos, (indice+1)*sizeof(Contato));
+            
+            // Guardar os Dados do Contato Filtrado no Vetor
+            (*listaContatos)[indice].codigo = contatos[i].codigo;
+            strcpy((*listaContatos)[indice].nome, contatos[i].nome);
+            strcpy((*listaContatos)[indice].telefone, contatos[i].telefone);
+            strcpy((*listaContatos)[indice].email, contatos[i].email);
+            strcpy((*listaContatos)[indice].endereco, contatos[i].endereco);
+            (*listaContatos)[indice].ativo = contatos[i].ativo;
+            
+            // Mudar Índice para Próxima Leitura
+            indice++;
+        }
+    }
+
+    // Retornar Quantidade de Contatos
+    return indice;
+}
+
 int ConsultarUltimoContato(FILE* arquivo, Contato** contato) {
     // Ler Cada Bloco do Arquivo
     int ultimoCodigo = 0;
