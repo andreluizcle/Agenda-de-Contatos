@@ -69,38 +69,38 @@ int ConsultarUltimoContato(FILE* arquivo, Contato** contato) {
 int ConsultarUltimoContatoArquivo(Contato** contato) {
     // Rodar o Comando no Arquivo
     int (*Comando)(FILE*, Contato**) = ConsultarUltimoContato;
-    int ultimoCodigo = Consultar(Comando, "rb", contato);
+    int quantidadeContatos = Consultar(Comando, "rb", contato);
 
     // Retornar Quantidade de Contatos
-    return ultimoCodigo;
+    return quantidadeContatos;
 }
 
-// int ConsultarContatoSelecionado(FILE* arquivo, Contato** contato) {
-//     // Ler Cada Bloco do Arquivo
-//     int codigoContato = (*contato)[0].codigo;
-//     Contato contatoLido;
+int ConsultarContatoSelecionado(FILE* arquivo, Contato** contato) {
+    // Ler Cada Bloco do Arquivo
+    int codigoContato = (*contato)[0].codigo;
+    Contato contatoLido;
 
-//     while(fread(&contatoLido, sizeof(Contato), 1, arquivo) > 0) {
-//         // Guardar os Dados Somente do Contato Escolhido
-//         if(contatoLido.ativo && contatoLido.codigo > ultimoCodigo) {
-//             (*contato)->codigo = contatoLido.codigo;
-//             strcpy((*contato)->nome, contatoLido.nome);
-//             strcpy((*contato)->telefone, contatoLido.telefone);
-//             strcpy((*contato)->email, contatoLido.email);
-//             strcpy((*contato)->endereco, contatoLido.endereco);
-//             (*contato)->ativo = contatoLido.ativo;
-//         }
-//     }
+    while(fread(&contatoLido, sizeof(Contato), 1, arquivo) > 0) {
+        // Guardar os Dados Somente do Contato Escolhido
+        if(contatoLido.ativo && contatoLido.codigo == codigoContato) {
+            (*contato)->codigo = contatoLido.codigo;
+            strcpy((*contato)->nome, contatoLido.nome);
+            strcpy((*contato)->telefone, contatoLido.telefone);
+            strcpy((*contato)->email, contatoLido.email);
+            strcpy((*contato)->endereco, contatoLido.endereco);
+            (*contato)->ativo = contatoLido.ativo;
+        }
+    }
 
-//     // Retornar Quantidade de Contatos
-//     return 1;
-// }
+    // Retornar Quantidade de Contatos
+    return 1;
+}
 
-// int ConsultarContatoSelecionadoArquivo(Contato** contato) {
-//     // Rodar o Comando no Arquivo
-//     int (*Comando)(FILE*, Contato**) = ConsultarContatoSelecionado;
-//     int ultimoCodigo = Consultar(Comando, "rb", contato);
+int ConsultarContatoSelecionadoArquivo(Contato** contato) {
+    // Rodar o Comando no Arquivo
+    int (*Comando)(FILE*, Contato**) = ConsultarContatoSelecionado;
+    int quantidadeContatos = Consultar(Comando, "rb", contato);
 
-//     // Retornar Quantidade de Contatos
-//     return ultimoCodigo;
-// }
+    // Retornar Quantidade de Contatos
+    return quantidadeContatos;
+}

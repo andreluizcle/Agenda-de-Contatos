@@ -12,7 +12,6 @@ int ListarContatosArquivo(Contato** dados);
 int ConsultarUltimoContato(FILE* arquivo, Contato** dados);
 int ConsultarUltimoContatoArquivo(Contato** dados);
 
-int UltimoCodigoContato();
-extern int totalContatos;
-
+int ConsultarContatoSelecionado(FILE* arquivo, Contato** dados);
+int ConsultarContatoSelecionadoArquivo(Contato** dados);
 #endif
