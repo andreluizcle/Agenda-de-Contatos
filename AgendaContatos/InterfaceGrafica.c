@@ -14,12 +14,13 @@ GtkWidget *list_box;
 static void pesquisaClicada(GtkButton *button, gpointer user_data);
 void SalvarResultados(GtkButton *button, gpointer user_data);
 static void CriarContatoPopUp(GtkButton *button, gpointer user_data);
-static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data,char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]);
+static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data,char codigo[5], char nome[50], char telefone[12], char email[50], char endereco[50]);
 static void Alterar(GtkButton *button, gpointer user_data);
-static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]);
+static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone[12], char email[50], char endereco[50]);
 static void atualizarPesquisa(const char *query);
 static void iniciarJanela(GtkApplication *app);
 static void Excluir(GtkButton *button, gpointer user_data);
+int validarCampos(GtkWidget *parent, const gchar *nome, const gchar *telefone, const gchar *email, const gchar *endereco);
 
 // Callback do botão de pesquisa
 static void pesquisaClicada(GtkButton *button, gpointer user_data) {
@@ -28,16 +29,101 @@ static void pesquisaClicada(GtkButton *button, gpointer user_data) {
     atualizarPesquisa(texto);
 }
 
+int validarCampos(GtkWidget *parent, const gchar *nome, const gchar *telefone, const gchar *email, const gchar *endereco)
+{
+    //Verifica se campos obrigatórios estão vazios
+    if (strlen(nome) == 0 || strlen(telefone) == 0) {
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent),
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_MESSAGE_ERROR,
+            GTK_BUTTONS_CLOSE,
+            "Por favor, preencha os campos obrigatórios: Nome e Telefone.");
+        gtk_window_set_title(GTK_WINDOW(dialog), "Erro");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        return 0;
+    }
+
+    //Verifica limites de caracteres
+    if (strlen(nome) > tamanhoPadrao || strlen(email) > tamanhoPadrao ||
+        strlen(endereco) > tamanhoPadrao) {
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent),
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_MESSAGE_ERROR,
+            GTK_BUTTONS_CLOSE,
+            "Um ou mais campos ultrapassam o limite de caracteres permitido.");
+        gtk_window_set_title(GTK_WINDOW(dialog), "Erro");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        return 0;
+    }
+
+    if (strlen(telefone) > tamanhoTelefone) {
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent),
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_MESSAGE_ERROR,
+            GTK_BUTTONS_CLOSE,
+            "O telefone deve ter no máximo 12 dígitos.");
+        gtk_window_set_title(GTK_WINDOW(dialog), "Erro");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        return 0;
+    }
+
+    //Verifica se telefone tem apenas dígitos
+    for (int i = 0; telefone[i] != '\0'; i++) {
+        if (!isdigit((unsigned char)telefone[i])) {
+            GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent),
+                GTK_DIALOG_DESTROY_WITH_PARENT,
+                GTK_MESSAGE_ERROR,
+                GTK_BUTTONS_CLOSE,
+                "O telefone deve conter apenas números.");
+            gtk_window_set_title(GTK_WINDOW(dialog), "Erro");
+            gtk_dialog_run(GTK_DIALOG(dialog));
+            gtk_widget_destroy(dialog);
+            return 0;
+        }
+    }
+
+    //Verifica formato básico do e-mail
+    if (strlen(email) > 0 && strstr(email, "@") == NULL) {
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent),
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_MESSAGE_ERROR,
+            GTK_BUTTONS_CLOSE,
+            "E-mail inválido. Verifique o formato e tente novamente.");
+        gtk_window_set_title(GTK_WINDOW(dialog), "Erro");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        return 0;
+    }
+
+    //Tudo certo
+    GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent),
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_MESSAGE_INFO,
+        GTK_BUTTONS_OK,
+        "Contato adicionado/alterado com sucesso!");
+    gtk_window_set_title(GTK_WINDOW(dialog), "Sucesso");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return 1;
+}
+
 //Fazar alteracao de contato
 void SalvarResultados(GtkButton *button, gpointer user_data) {
     const char *nomeWidget = gtk_widget_get_name(GTK_WIDGET(button));
     GtkWidget **entrada = (GtkWidget **) user_data;
+    GtkWidget *janelaAtual = gtk_widget_get_toplevel(GTK_WIDGET(button));
 
     //get_text retorna ponteiro para dentro do proprio Widget
     const char *nome = gtk_entry_get_text(GTK_ENTRY(entrada[0]));
     const char *telefone = gtk_entry_get_text(GTK_ENTRY(entrada[1]));
     const char *email = gtk_entry_get_text(GTK_ENTRY(entrada[2]));
     const char *endereco = gtk_entry_get_text(GTK_ENTRY(entrada[3]));
+
+    if(!validarCampos(janelaAtual, nome, telefone, email, endereco))
+        return;
 
     Contato novoContato;
     strcpy(novoContato.nome, g_strdup(nome));
@@ -53,7 +139,6 @@ void SalvarResultados(GtkButton *button, gpointer user_data) {
         CadastrarContatoArquivo(novoContato);
     }
     
-    GtkWidget *janelaAtual = gtk_widget_get_toplevel(GTK_WIDGET(button));
     gtk_widget_destroy(janelaAtual);
     atualizarPesquisa("");
 }
@@ -147,7 +232,7 @@ static void Alterar(GtkButton *button, gpointer user_data){
 }
 
 //Interface Atualizar Contato
-static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]){
+static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char codigo[5], char nome[50], char telefone[12], char email[50], char endereco[50]){
     GtkWidget *janelaAnterior = GTK_WIDGET(user_data);
     GtkWidget *CaixaDialogo,*grid;
     GtkWidget *inputNome, *inputTelefone, *labelNome, *labelTelefone, *labelEmail, *inputEmail, *labelEndereco, *inputEndereco, *botaoEnviar, *cod;
@@ -239,7 +324,7 @@ static void Excluir(GtkButton *button, gpointer user_data){
 }
 
 // Cria uma linha com o nome de um contato
-static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]){
+static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone[12], char email[50], char endereco[50]){
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 20);
   GtkWidget *cod = gtk_label_new(codigo);
   GtkWidget *labelNome = gtk_label_new(nome);
