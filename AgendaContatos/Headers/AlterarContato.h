@@ -11,5 +11,6 @@
 #include "ConsultarContato.h"
 
 void AlterarContato(FILE* arquivo, Contato contatoalt);
+void AlterarContatoArquivo(Contato contatoAlterar);
 
 #endif
