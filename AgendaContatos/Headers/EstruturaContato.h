@@ -2,7 +2,9 @@
 #define ESTRUTURACONTATO_H
 #define tamanhoPadrao 50
 
-//
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct {
     int codigo;
     char nome[tamanhoPadrao];

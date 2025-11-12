@@ -1,15 +1,6 @@
-// Inclusão de bibliotecas
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "Headers/AlterarContato.h"
 
-// Inclusão de arquivos externos (estruturas de funções, detalhes fundamentais etc)
-#include "Headers/EstruturaContato.h"
-#include "Headers/LerArquivo.h"
-#include "Headers/CadastrarContato.h"
-#include "Headers/ConsultarContato.h"
-
-void AlterarContato(FILE* arquivo, Contato contatoalt) {
+void AlterarContato(FILE* arquivo, Contato contatoalt){
     Contato contato;
 
     // Alterando o contato no arquivo
