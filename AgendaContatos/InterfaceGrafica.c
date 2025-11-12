@@ -1,5 +1,4 @@
 #include <gtk/gtk.h>
-#include <glib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -46,9 +45,7 @@ void SalvarResultados(GtkButton *button, gpointer user_data) {
     strcpy(novoContato.email, g_strdup(email));
     strcpy(novoContato.endereco, g_strdup(endereco));
     novoContato.codigo = atoi(codigo);
-    FILE *arq = fopen("Contatos.bin", "r+b");
-    AlterarContato(arq, novoContato);
-    fclose(arq);
+    AlterarContatoArquivo(novoContato);
 
     GtkWidget *janelaAtual = gtk_widget_get_toplevel(GTK_WIDGET(button));
     gtk_widget_destroy(janelaAtual);
@@ -69,10 +66,12 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     gtk_window_set_resizable(GTK_WINDOW(CaixaDialogo), FALSE);
     gtk_window_set_icon_from_file(GTK_WINDOW(CaixaDialogo), "icons/icon2.png", NULL);
 
+    //Criar Caixa Vertical da tela
     GtkWidget *verticalBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_set_border_width(GTK_CONTAINER(verticalBox), 10);
     gtk_container_add(GTK_CONTAINER(CaixaDialogo), verticalBox);
 
+    //Cada Item da vertical e uma caixa horizontal
     GtkWidget *horizontalBoxNome = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxNome), 10);
     gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxNome);
@@ -99,11 +98,13 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     inputEndereco = gtk_entry_new();
     botaoEnviar = gtk_button_new_with_label("Enviar");
 
+    //Alinhamentos
     gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
     gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
     gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
     gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
 
+    //Adicionar cada item nas caixas
     gtk_box_pack_start(GTK_BOX(horizontalBoxNome), labelNome, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(horizontalBoxNome), inputNome, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(horizontalBoxTelefone), labelTelefone, TRUE, TRUE, 0);
@@ -115,7 +116,7 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     gtk_box_pack_start(GTK_BOX(verticalBox), botaoEnviar, TRUE, FALSE, 0);
 
     //Criar Dinamicamente com GTK para utilizar na SalvarResultados
-    GtkWidget **entradas = g_new(GtkWidget *, 4);
+    GtkWidget **entradas = g_new(GtkWidget *, 4); //criar array dinamico 4
     entradas[0] = inputNome;
     entradas[1] = inputTelefone;
     entradas[2] = inputEmail;
@@ -154,10 +155,12 @@ static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char co
     gtk_window_set_resizable(GTK_WINDOW(CaixaDialogo), FALSE);
     gtk_window_set_icon_from_file(GTK_WINDOW(CaixaDialogo), "icons/icon2.png", NULL);
 
+    //Caixa vertical da tela
     GtkWidget *verticalBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_set_border_width(GTK_CONTAINER(verticalBox), 10);
     gtk_container_add(GTK_CONTAINER(CaixaDialogo), verticalBox);
 
+    //Cada item do vertical e um horizontal
     GtkWidget *horizontalBoxNome = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_container_set_border_width(GTK_CONTAINER(horizontalBoxNome), 10);
     gtk_container_add(GTK_CONTAINER(verticalBox), horizontalBoxNome);
@@ -184,16 +187,19 @@ static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char co
     inputEndereco = gtk_entry_new();
     botaoEnviar = gtk_button_new_with_label("Enviar");
 
+    //Colocar valores anteriores no input
     gtk_entry_set_text(GTK_ENTRY(inputNome), nome);
     gtk_entry_set_text(GTK_ENTRY(inputTelefone), telefone);
     gtk_entry_set_text(GTK_ENTRY(inputEmail), email);
     gtk_entry_set_text(GTK_ENTRY(inputEndereco), endereco);
 
+    //alinhamento
     gtk_widget_set_halign(labelNome, GTK_ALIGN_START);
     gtk_widget_set_halign(labelTelefone, GTK_ALIGN_START);
     gtk_widget_set_halign(labelEmail, GTK_ALIGN_START);
     gtk_widget_set_halign(labelEndereco, GTK_ALIGN_START);
 
+    //colocar itens na caixa
     gtk_box_pack_start(GTK_BOX(horizontalBoxNome), labelNome, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(horizontalBoxNome), inputNome, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(horizontalBoxTelefone), labelTelefone, TRUE, TRUE, 0);
@@ -235,6 +241,7 @@ static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone
   GtkWidget *botaoAlterar = gtk_button_new_with_label("Alterar");
   GtkWidget *botaoExcluir = gtk_button_new_with_label("Excluir");
   GtkWidget **informacoes = g_new(GtkWidget*, 5); // aloca vetor de 5 ponteiros
+
   informacoes[4] = cod;
   informacoes[0] = labelNome;
   informacoes[1] = labelTelefone;
@@ -243,32 +250,33 @@ static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone
 
   gtk_widget_set_halign(labelNome, GTK_ALIGN_CENTER);
   //Expand, Fill, Margin Expand->Crese se houver espaço, se estiver orientado vertical cresce vertical, Fill->Ocupa todo espaço que recebeu ou nao ocupa mas reserva
-  gtk_box_pack_start(GTK_BOX(box), labelNome, TRUE, TRUE, 6);
-  gtk_widget_set_size_request(labelNome, 200, -1);
+  gtk_box_pack_start(GTK_BOX(box), labelNome, TRUE, TRUE, 6); //Resize
+  gtk_widget_set_size_request(labelNome, 200, -1); //Tamanho na tela
 
-  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_CENTER); 
-  gtk_widget_set_size_request(labelTelefone, 200, -1);
-  gtk_box_pack_start(GTK_BOX(box), labelTelefone, TRUE, TRUE, 6);
+  gtk_widget_set_halign(labelTelefone, GTK_ALIGN_CENTER); //Alinhamento
+  gtk_widget_set_size_request(labelTelefone, 200, -1); //Resize
+  gtk_box_pack_start(GTK_BOX(box), labelTelefone, TRUE, TRUE, 6); //Tamanho na tela
 
-  gtk_widget_set_halign(labelEmail, GTK_ALIGN_CENTER);
-  gtk_widget_set_size_request(labelEmail, 200, -1);
-  gtk_box_pack_start(GTK_BOX(box), labelEmail, TRUE, TRUE, 6);
+  gtk_widget_set_halign(labelEmail, GTK_ALIGN_CENTER); //Alinhamento
+  gtk_widget_set_size_request(labelEmail, 200, -1); //Resize
+  gtk_box_pack_start(GTK_BOX(box), labelEmail, TRUE, TRUE, 6); //Tamanho na tela
 
-  gtk_widget_set_halign(labelEndereco, GTK_ALIGN_CENTER);
-  gtk_widget_set_size_request(labelEndereco, 200, -1);
-  gtk_box_pack_start(GTK_BOX(box), labelEndereco, TRUE, TRUE, 6);
+  gtk_widget_set_halign(labelEndereco, GTK_ALIGN_CENTER); //Alinhamento
+  gtk_widget_set_size_request(labelEndereco, 200, -1); //Resize
+  gtk_box_pack_start(GTK_BOX(box), labelEndereco, TRUE, TRUE, 6); //Tamanho na tela
 
   g_signal_connect(botaoAlterar, "clicked", G_CALLBACK(Alterar), informacoes);
   // dar tamanho mínimo ao botão para garantir visibilidade
-  gtk_widget_set_size_request(botaoAlterar, 80, -1);
-  gtk_widget_set_halign(botaoAlterar, GTK_ALIGN_END);
-  gtk_box_pack_start(GTK_BOX(box), botaoAlterar, TRUE, TRUE, 6);
+  gtk_widget_set_size_request(botaoAlterar, 80, -1); //Tamanho na tela
+  gtk_widget_set_halign(botaoAlterar, GTK_ALIGN_END); //Alinhamento
+  gtk_box_pack_start(GTK_BOX(box), botaoAlterar, TRUE, TRUE, 6); //Resize
+  
 
-  gtk_widget_set_halign(botaoExcluir, GTK_ALIGN_END);
+  gtk_widget_set_halign(botaoExcluir, GTK_ALIGN_END); //Alinhamento
   g_signal_connect(botaoExcluir, "clicked", G_CALLBACK(Excluir), GINT_TO_POINTER(codigo));
   // dar tamanho mínimo ao botão para garantir visibilidade
-  gtk_widget_set_size_request(botaoExcluir, 80, -1);
-  gtk_box_pack_start(GTK_BOX(box), botaoExcluir, TRUE, TRUE, 6);
+  gtk_widget_set_size_request(botaoExcluir, 80, -1); //Tamanho na tela
+  gtk_box_pack_start(GTK_BOX(box), botaoExcluir, TRUE, TRUE, 6); //Resize
   
   return box;
 }
@@ -288,6 +296,7 @@ static void atualizarPesquisa(const char *query) {
     Contato* dados = (Contato*)malloc(sizeof(Contato));
     int quantidadeContatos = 0;
     
+    //query vazia = listar tudo
     if (strlen(query) == 0)
         quantidadeContatos = ListarContatosArquivo(&dados);
     else
@@ -302,7 +311,6 @@ static void atualizarPesquisa(const char *query) {
 
     // Limpar memória da lista de contatos
     free(dados);
-
     gtk_widget_show_all(list_box);
 }
 
