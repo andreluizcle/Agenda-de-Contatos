@@ -23,5 +23,4 @@ void ExcluirContato(FILE* arquivo, Contato contatoexc) {
 
 void ExcluirContaatoArquivo(Contato contatoexc) {
     Executar(ExcluirContato, "r+b", contatoexc);
-
 }

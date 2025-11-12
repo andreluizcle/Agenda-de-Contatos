@@ -30,6 +30,7 @@ static void pesquisaClicada(GtkButton *button, gpointer user_data) {
 
 //Fazar alteracao de contato
 void SalvarResultados(GtkButton *button, gpointer user_data) {
+    const char *nomeWidget = gtk_widget_get_name(GTK_WIDGET(button));
     GtkWidget **entrada = (GtkWidget **) user_data;
 
     //get_text retorna ponteiro para dentro do proprio Widget
@@ -37,16 +38,21 @@ void SalvarResultados(GtkButton *button, gpointer user_data) {
     const char *telefone = gtk_entry_get_text(GTK_ENTRY(entrada[1]));
     const char *email = gtk_entry_get_text(GTK_ENTRY(entrada[2]));
     const char *endereco = gtk_entry_get_text(GTK_ENTRY(entrada[3]));
-    const char *codigo = gtk_entry_get_text(GTK_ENTRY(entrada[4]));
 
     Contato novoContato;
     strcpy(novoContato.nome, g_strdup(nome));
     strcpy(novoContato.telefone, g_strdup(telefone));
     strcpy(novoContato.email, g_strdup(email));
     strcpy(novoContato.endereco, g_strdup(endereco));
-    novoContato.codigo = atoi(codigo);
-    AlterarContatoArquivo(novoContato);
 
+    if (strcmp(nomeWidget,"Atualizar")==0){
+        const char *codigo = gtk_entry_get_text(GTK_ENTRY(entrada[4]));
+        novoContato.codigo = atoi(codigo);
+        AlterarContatoArquivo(novoContato);
+    } else if(strcmp(nomeWidget, "Cadastrar")==0){
+        CadastrarContatoArquivo(novoContato);
+    }
+    
     GtkWidget *janelaAtual = gtk_widget_get_toplevel(GTK_WIDGET(button));
     gtk_widget_destroy(janelaAtual);
     atualizarPesquisa("");
@@ -122,6 +128,7 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
     entradas[2] = inputEmail;
     entradas[3] = inputEndereco;
 
+    gtk_widget_set_name(botaoEnviar, "Cadastrar");
     g_signal_connect(botaoEnviar, "clicked", G_CALLBACK(SalvarResultados), entradas);
     gtk_widget_show_all(CaixaDialogo);
 }
@@ -217,15 +224,16 @@ static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char co
     entradas[2] = inputEmail;
     entradas[3] = inputEndereco;
     entradas[4] = cod;
-
+    gtk_widget_set_name(botaoEnviar, "Atualizar");
     g_signal_connect(botaoEnviar, "clicked", G_CALLBACK(SalvarResultados), entradas);
     gtk_widget_show_all(CaixaDialogo);
 }
 
 //Excluir Contato
 static void Excluir(GtkButton *button, gpointer user_data){
+    int codigo = GPOINTER_TO_INT(user_data);
     Contato contato;
-    contato.codigo = GPOINTER_TO_INT(user_data);
+    contato.codigo = codigo;
     ExcluirContaatoArquivo(contato);
     atualizarPesquisa("");
 }
@@ -273,7 +281,7 @@ static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone
   
 
   gtk_widget_set_halign(botaoExcluir, GTK_ALIGN_END); //Alinhamento
-  g_signal_connect(botaoExcluir, "clicked", G_CALLBACK(Excluir), GINT_TO_POINTER(codigo));
+  g_signal_connect(botaoExcluir, "clicked", G_CALLBACK(Excluir),  GINT_TO_POINTER(atoi(codigo)));
   // dar tamanho mínimo ao botão para garantir visibilidade
   gtk_widget_set_size_request(botaoExcluir, 80, -1); //Tamanho na tela
   gtk_box_pack_start(GTK_BOX(box), botaoExcluir, TRUE, TRUE, 6); //Resize
