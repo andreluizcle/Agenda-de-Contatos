@@ -15,4 +15,6 @@ int ConsultarUltimoContatoArquivo(Contato** dados);
 
 int ConsultarContatoSelecionado(FILE* arquivo, Contato** dados);
 int ConsultarContatoSelecionadoArquivo(Contato** dados);
+
+void OrdenarConsulta(Contato** listaContatos, int quantidadeContatos);
 #endif

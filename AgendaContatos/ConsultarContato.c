@@ -31,7 +31,9 @@ int ListarContatos(FILE* arquivo, Contato** listaContatos) {
             indice++;
         }
     }
-    
+
+    OrdenarConsulta(listaContatos, indice);
+
     // Retornar Quantidade de Contatos
     return indice;
 }
@@ -81,6 +83,8 @@ int ListarContatosFiltradoArquivo(Contato** listaContatos, const char* filtro) {
             indice++;
         }
     }
+
+    OrdenarConsulta(listaContatos, indice);
 
     // Retornar Quantidade de Contatos
     return indice;
@@ -144,4 +148,22 @@ int ConsultarContatoSelecionadoArquivo(Contato** contato) {
 
     // Retornar Quantidade de Contatos
     return quantidadeContatos;
+}
+
+// Método para ordenar a lista originada em uma consulta ao registro de contatos
+// Recebe um ponteiro de ponteiro pois será usado dentro de métodos
+// que manipulam tal tipo
+void OrdenarConsulta(Contato** listaContatos, int quantidadeContatos){
+    for(int i=0; i<quantidadeContatos-1; i++){
+        for(int j=i+1; j<quantidadeContatos; j++){
+            // Comparação para ordenação alfabética
+            if(strcmp((*listaContatos)[j].nome, (*listaContatos)[i].nome) < 0){
+
+                //Troca de posição entre contatos
+                Contato contatoAuxiliar = (*listaContatos)[i];
+                (*listaContatos)[i] = (*listaContatos)[j];
+                (*listaContatos)[j] = contatoAuxiliar;
+            }
+        }
+    }
 }
