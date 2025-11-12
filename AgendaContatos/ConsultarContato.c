@@ -93,7 +93,9 @@ int ListarContatosFiltradoArquivo(Contato** listaContatos, const char* filtro) {
 int ConsultarUltimoContato(FILE* arquivo, Contato** contato) {
     // Ler Cada Bloco do Arquivo
     int ultimoCodigo = 0;
-    Contato contatoLido;
+    Contato contatoLido = {
+        .codigo = 0,
+    };
 
     while(fread(&contatoLido, sizeof(Contato), 1, arquivo) > 0) {
         // Guardar os Dados Somente do Último Contato
