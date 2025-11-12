@@ -1,10 +1,13 @@
 #include <gtk/gtk.h>
+#include <glib.h>
 #include <string.h>
 #include <ctype.h>
 
 #include "Headers/EstruturaContato.h"
 #include "Headers/ConsultarContato.h"
 #include "Headers/CadastrarContato.h"
+#include "Headers/AlterarContato.h"
+#include "Headers/ExcluirContato.h"
 
 // Lista global para os contatos
 GtkWidget *list_box;
@@ -12,9 +15,9 @@ GtkWidget *list_box;
 static void pesquisaClicada(GtkButton *button, gpointer user_data);
 void SalvarResultados(GtkButton *button, gpointer user_data);
 static void CriarContatoPopUp(GtkButton *button, gpointer user_data);
-static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char nome[50], char telefone[50], char email[50], char endereco[50]);
+static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data,char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]);
 static void Alterar(GtkButton *button, gpointer user_data);
-static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50], char email[50], char endereco[50]);
+static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]);
 static void atualizarPesquisa(const char *query);
 static void iniciarJanela(GtkApplication *app);
 static void Excluir(GtkButton *button, gpointer user_data);
@@ -34,13 +37,17 @@ void SalvarResultados(GtkButton *button, gpointer user_data) {
     const char *telefone = gtk_entry_get_text(GTK_ENTRY(entrada[1]));
     const char *email = gtk_entry_get_text(GTK_ENTRY(entrada[2]));
     const char *endereco = gtk_entry_get_text(GTK_ENTRY(entrada[3]));
+    const char *codigo = gtk_entry_get_text(GTK_ENTRY(entrada[4]));
 
     Contato novoContato;
     strcpy(novoContato.nome, g_strdup(nome));
     strcpy(novoContato.telefone, g_strdup(telefone));
     strcpy(novoContato.email, g_strdup(email));
     strcpy(novoContato.endereco, g_strdup(endereco));
-    CadastrarContatoArquivo(novoContato);
+    novoContato.codigo = atoi(codigo);
+    FILE *arq = fopen("Contatos.bin", "r+b");
+    AlterarContato(arq, novoContato);
+    fclose(arq);
 
     GtkWidget *janelaAtual = gtk_widget_get_toplevel(GTK_WIDGET(button));
     gtk_widget_destroy(janelaAtual);
@@ -117,20 +124,23 @@ static void CriarContatoPopUp(GtkButton *button, gpointer user_data) {
 }
 
 static void Alterar(GtkButton *button, gpointer user_data){
-    //Chamar um metodo de Excluir aqui
     GtkWidget **entrada = (GtkWidget **) user_data;
+
     const char *nome = gtk_label_get_text(GTK_LABEL(entrada[0]));
     const char *telefone = gtk_label_get_text(GTK_LABEL(entrada[1]));
     const char *email = gtk_label_get_text(GTK_LABEL(entrada[2]));
     const char *endereco = gtk_label_get_text(GTK_LABEL(entrada[3]));
+    const char *codigo = gtk_label_get_text(GTK_LABEL(entrada[4]));
 
-    AtualizarContatoPopUp(NULL, NULL, g_strdup(nome), g_strdup(telefone), g_strdup(email), g_strdup(endereco));
+    AtualizarContatoPopUp(NULL, NULL, g_strdup(codigo), g_strdup(nome), g_strdup(telefone), g_strdup(email), g_strdup(endereco));
 }
 
-static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char nome[50], char telefone[50], char email[50], char endereco[50]){
+static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]){
     GtkWidget *janelaAnterior = GTK_WIDGET(user_data);
     GtkWidget *CaixaDialogo,*grid;
-    GtkWidget *inputNome, *inputTelefone, *labelNome, *labelTelefone, *labelEmail, *inputEmail, *labelEndereco, *inputEndereco, *botaoEnviar;
+    GtkWidget *inputNome, *inputTelefone, *labelNome, *labelTelefone, *labelEmail, *inputEmail, *labelEndereco, *inputEndereco, *botaoEnviar, *cod;
+    cod = gtk_entry_new();
+    gtk_entry_set_text(GTK_ENTRY(cod), codigo);
 
     CaixaDialogo = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(CaixaDialogo), "Atualizar Contato");
@@ -191,30 +201,36 @@ static void AtualizarContatoPopUp(GtkButton *button, gpointer user_data, char no
     gtk_box_pack_start(GTK_BOX(verticalBox), botaoEnviar, TRUE, FALSE, 0);
 
     //Criar Dinamicamente com GTK para utilizar na SalvarResultados
-    GtkWidget **entradas = g_new(GtkWidget *, 2);
+    GtkWidget **entradas = g_new(GtkWidget *, 5);
     entradas[0] = inputNome;
     entradas[1] = inputTelefone;
+    entradas[2] = inputEmail;
+    entradas[3] = inputEndereco;
+    entradas[4] = cod;
 
     g_signal_connect(botaoEnviar, "clicked", G_CALLBACK(SalvarResultados), entradas);
     gtk_widget_show_all(CaixaDialogo);
 }
 
 static void Excluir(GtkButton *button, gpointer user_data){
-    //Chamar um metodo de Excluir aqui
-    GtkWidget **codigo = (GtkWidget **) user_data;
-    printf("%d", codigo);
+    Contato contato;
+    contato.codigo = GPOINTER_TO_INT(user_data);
+    ExcluirContaatoArquivo(contato);
+    atualizarPesquisa("");
 }
 
 // Cria uma linha com o nome de um contato
-static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50], char email[50], char endereco[50]){
+static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone[50], char email[50], char endereco[50]){
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 20);
+  GtkWidget *cod = gtk_label_new(codigo);
   GtkWidget *labelNome = gtk_label_new(nome);
   GtkWidget *labelTelefone = gtk_label_new(telefone);
   GtkWidget *labelEmail = gtk_label_new(email);
   GtkWidget *labelEndereco = gtk_label_new(endereco);
   GtkWidget *botaoAlterar = gtk_button_new_with_label("Alterar");
   GtkWidget *botaoExcluir = gtk_button_new_with_label("Excluir");
-  GtkWidget **informacoes = g_new(GtkWidget*, 4); // aloca vetor de 4 ponteiros
+  GtkWidget **informacoes = g_new(GtkWidget*, 5); // aloca vetor de 5 ponteiros
+  informacoes[4] = cod;
   informacoes[0] = labelNome;
   informacoes[1] = labelTelefone;
   informacoes[2] = labelEmail;
@@ -255,7 +271,7 @@ static GtkWidget* criarLinhaContato(int codigo, char nome[50], char telefone[50]
 // Atualiza os resultados da pesquisa
 static void atualizarPesquisa(const char *query) {
     GList *children, *iter;
-
+    char cod[5];
     // Remove o conteúdo atual da lista
     children = gtk_container_get_children(GTK_CONTAINER(list_box));
     //Iter->next (Proximo No do Grafo)
@@ -273,7 +289,8 @@ static void atualizarPesquisa(const char *query) {
         quantidadeContatos = ListarContatosFiltradoArquivo(&dados, query);
 
     for (int i = 0; i < quantidadeContatos; i++) {
-        GtkWidget *linha = criarLinhaContato(dados[i].codigo, dados[i].nome, dados[i].telefone, dados[i].email, dados[i].endereco);
+        snprintf(cod, sizeof(cod), "%d", dados[i].codigo);
+        GtkWidget *linha = criarLinhaContato(cod, dados[i].nome, dados[i].telefone, dados[i].email, dados[i].endereco);
         //-1 -> Final da lista (Parametro de posição)
         gtk_list_box_insert(GTK_LIST_BOX(list_box), linha, -1);
     }

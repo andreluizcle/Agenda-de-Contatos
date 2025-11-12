@@ -1,13 +1,4 @@
-// Inclusão de bibliotecas
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-// Inclusão de arquivos externos (estruturas de funções, detalhes fundamentais etc)
-#include "Headers/EstruturaContato.h"
-#include "Headers/LerArquivo.h"
-#include "Headers/CadastrarContato.h"
-#include "Headers/ConsultarContato.h"
+#include "Headers/ExcluirContato.h"
 
 void ExcluirContato(FILE* arquivo, Contato contatoexc) {
     Contato contato;
