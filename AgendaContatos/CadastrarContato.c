@@ -43,6 +43,7 @@ void CadastrarContatoArquivo(Contato novoContato){
     Contato* ultimoContato = (Contato*)malloc(sizeof(Contato));
     ConsultarUltimoContatoArquivo(&ultimoContato);
     novoContato.codigo = ultimoContato->codigo + 1;
+    free(ultimoContato);
 
     // Acessar o método de cadastro
     void (*Comando)(FILE*, Contato) = CadastrarContato;
