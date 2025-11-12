@@ -285,7 +285,7 @@ static GtkWidget* criarLinhaContato(char codigo[5], char nome[50], char telefone
 static void atualizarPesquisa(const char *query) {
     GList *children, *iter;
     char cod[5];
-    // Remove o conteúdo atual da lista
+    // Remove o conteúdo atual da lista, varrer grafo limpando tudo
     children = gtk_container_get_children(GTK_CONTAINER(list_box));
     //Iter->next (Proximo No do Grafo)
     for (iter = children; iter != NULL; iter = iter->next)
@@ -369,4 +369,5 @@ int main(int argc, char **argv) {
     g_object_unref(app);
 
     return status;
+
 }
