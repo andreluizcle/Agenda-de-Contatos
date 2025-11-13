@@ -17,4 +17,6 @@ int ConsultarContatoSelecionado(FILE* arquivo, Contato** dados);
 int ConsultarContatoSelecionadoArquivo(Contato** dados);
 
 void OrdenarConsulta(Contato** listaContatos, int quantidadeContatos);
+char* upperCase(const char* texto);
+
 #endif

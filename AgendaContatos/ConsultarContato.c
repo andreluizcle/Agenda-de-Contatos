@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 // Incluir Arquivos Externos
 #include "Headers/EstruturaContato.h"
@@ -158,8 +159,12 @@ int ConsultarContatoSelecionadoArquivo(Contato** contato) {
 void OrdenarConsulta(Contato** listaContatos, int quantidadeContatos){
     for(int i=0; i<quantidadeContatos-1; i++){
         for(int j=i+1; j<quantidadeContatos; j++){
+            char nomeAtual[tamanhoPadrao], nomeFixo[tamanhoPadrao];
+            strcpy(nomeAtual, upperCase((*listaContatos)[j].nome));
+            strcpy(nomeFixo, upperCase((*listaContatos)[i].nome));
+
             // Comparação para ordenação alfabética
-            if(strcmp((*listaContatos)[j].nome, (*listaContatos)[i].nome) < 0){
+            if(strcmp(nomeAtual, nomeFixo) < 0) {
 
                 //Troca de posição entre contatos
                 Contato contatoAuxiliar = (*listaContatos)[i];
@@ -168,4 +173,15 @@ void OrdenarConsulta(Contato** listaContatos, int quantidadeContatos){
             }
         }
     }
+}
+
+char* upperCase(const char* texto){
+    int tamanhoTexto = strlen(texto);
+    char textoUpper[++tamanhoTexto];
+
+    for(int i=0; i<tamanhoTexto; i++){
+        textoUpper[i] = toupper((unsigned char)texto[i]);
+    }
+
+    return textoUpper;
 }
