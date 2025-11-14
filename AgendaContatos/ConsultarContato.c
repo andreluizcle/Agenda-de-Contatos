@@ -159,9 +159,8 @@ int ConsultarContatoSelecionadoArquivo(Contato** contato) {
 void OrdenarConsulta(Contato** listaContatos, int quantidadeContatos){
     for(int i=0; i<quantidadeContatos-1; i++){
         for(int j=i+1; j<quantidadeContatos; j++){
-            char nomeAtual[tamanhoPadrao], nomeFixo[tamanhoPadrao];
-            strcpy(nomeAtual, upperCase((*listaContatos)[j].nome));
-            strcpy(nomeFixo, upperCase((*listaContatos)[i].nome));
+            char* nomeAtual = upperCase((*listaContatos)[j].nome);
+            char* nomeFixo = upperCase((*listaContatos)[i].nome);
 
             // Comparação para ordenação alfabética
             if(strcmp(nomeAtual, nomeFixo) < 0) {
@@ -171,17 +170,21 @@ void OrdenarConsulta(Contato** listaContatos, int quantidadeContatos){
                 (*listaContatos)[i] = (*listaContatos)[j];
                 (*listaContatos)[j] = contatoAuxiliar;
             }
+            free(nomeAtual);
+            free(nomeFixo);
         }
     }
 }
 
 char* upperCase(const char* texto){
     int tamanhoTexto = strlen(texto);
-    char textoUpper[++tamanhoTexto];
+    int i;
+    char* textoUpper = (char*)malloc(++tamanhoTexto*sizeof(char));
 
-    for(int i=0; i<tamanhoTexto; i++){
+    for(i=0; i<tamanhoTexto; i++){
         textoUpper[i] = toupper((unsigned char)texto[i]);
     }
+    textoUpper[i] = '\0';
 
     return textoUpper;
 }
