@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="#-Sobre-o-projeto">Sobre</a> |
-  <a href="#Funcionalidades">Funcionalidades</a> |
+  <a href="#-Funcionalidades-do-projeto">Funcionalidades</a> |
   <a href="#-Instalação-e-uso">Instalação</a>
 </p>
 
@@ -16,7 +16,7 @@ Possui uma interface gráfica e permite cadastrar, pesquisar, atualizar e exclui
 
 ---
 
-## ⚙️ Funcionalidades
+## ⚙️ Funcionalidades do projeto
 - [X] Cadastra contato com dados básicos (nome, telefone, email etc).
 - [X] Permite consultar, alterar e excluir contatos já cadastrados.
 - [ ] Faz um ace no pistol com 30 de HP.
