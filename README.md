@@ -39,3 +39,5 @@ Passo a passo para configuração do ambiente e execução:
 [Felipe Kenji Ouba Fukuzono](https://github.com/felipekenjidev)
 
 [Guilherme Silva](https://github.com/gsoaresslv)
+
+[Guilherme Gali Rocha](https://github.com/ggalirocha)
