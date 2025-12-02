@@ -5,7 +5,8 @@
 <p align="center">
   <a href="#-Sobre-o-projeto">Sobre</a> |
   <a href="#-Funcionalidades-do-projeto">Funcionalidades</a> |
-  <a href="#-Instalação-e-uso">Instalação</a>
+  <a href="#-Instalação-e-uso">Instalação</a> |
+  <a href="#-Autores">Autores</a>
 </p>
 
     
@@ -27,3 +28,14 @@ Possui uma interface gráfica e permite cadastrar, pesquisar, atualizar e exclui
 Você pode clicar <a href="">aqui</a> para baixar o instalador ou seguir o passo a passo descrito abaixo.
 
 Passo a passo para configuração do ambiente e execução:
+
+---
+
+## 👥 Autores
+[André Luiz Clemente de Oliveira](https://github.com/andreluizcle)
+
+[Arthur de Oliveira Nero](https://github.com/Nerinhosx)
+
+[Felipe Kenji Ouba Fukuzono](https://github.com/felipekenjidev)
+
+[Guilherme Silva](https://github.com/gsoaresslv)
