@@ -25,9 +25,7 @@ Possui uma interface gráfica e permite cadastrar, pesquisar, atualizar e exclui
 ---
 
 ## 💻 Instalação e uso
-Você pode clicar <a href="">aqui</a> para baixar o instalador ou seguir o passo a passo descrito abaixo.
-
-Passo a passo para configuração do ambiente e execução:
+Você pode clicar <a href="https://github.com/andreluizcle/Agenda-de-Contatos/releases/latest/download/instaladorAgendaDeContatos.exe">aqui</a> para baixar o instalador da versão mais recente ou seguir o passo a passo descrito abaixo.
 
 ---
 
